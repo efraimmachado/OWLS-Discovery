@@ -18,7 +18,14 @@ public class Node {
     public Node(Service service, String name)
     {
         this.service = service;
-        this.name = name;
+        if (name == null)
+        {
+            this.name = service.getUri().toString();
+        }
+        else
+        {
+            this.name = name;
+        }
     }
 
     public Service getService()

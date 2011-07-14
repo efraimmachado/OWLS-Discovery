@@ -143,6 +143,7 @@ public class FunctionalEngine implements IEngine{
 			MainFunctionalMatcher.writeOutput("REQUEST:\n" + inputManager.getRequest().getUri().toString() + "\n\nSERVICE:\n");
 
 			for(int i=0; i <functionalMatcher.getResultInputs().size(); i++ ) {
+                                //System.out.println("teste fundamental "+inputManager.getServices().get(i).getInputList()+"\n"+functionalMatcher.getResultInputs().get(i).toString());
 				this.setResultInputs(functionalMatcher.getResultInputs().get(i));
 				this.setResultOutputs(functionalMatcher.getResultOutputs().get(i));
 				this.removeDualCorrespondences(this.getResultInputs(), FunctionalMatcher.INPUT);
@@ -213,44 +214,70 @@ public class FunctionalEngine implements IEngine{
                                     }
                                    
                                 }
+                                for(int i=0; i <functionalMatcher.getResultInputs().size(); i++ )
+                                {
+                                    //System.out.println("teste fundamental "+inputManager.getServices().get(i).getInputList()+"\n"+functionalMatcher.getResultInputs().get(i).toString());
+                                    this.setResultInputs(functionalMatcher.getResultInputs().get(i));
+                                    //this.setResultOutputs(functionalMatcher.getResultOutputs().get(i));
+                                    this.removeDualCorrespondences(this.getResultInputs(), FunctionalMatcher.INPUT);
+                                    //this.removeDualCorrespondences(this.getResultOutputs(), FunctionalMatcher.OUTPUT);
+                                    servicesMatched.add(this.classifyResults(inputManager.getServices().get(i),inputManager.getRequest()));
+            			}
+
+                                for (int i = 0; i < servicesMatched.size(); i++)
+                                {
+                                    //System.out.println("servico "+(i+1)+servicesMatched.get(i).getUri()+" => "+servicesMatched.get(i).getDegreeMatch()+"\n"+servicesMatched.get(i).getOutputList());
+                                    if (servicesMatched.get(i).getDegreeMatch() == null)
+                                    {
+                                        servicesMatched.remove(i);
+                                    }
+                                }
 
 				//choice the best service to solve the pendency
-                                System.out.println("Escolhendo melhor no");
-				while (newNode == null)
+
+				while (newNode == null && !servicesMatched.isEmpty())
 				{
-//					newNode = new Node(new Service(results.get(0).get(0), null, new URI("semnocao")), "");//BestChoice(PEGADINHADOMALANDRO);
-                                        //System.out.println("loop");
+                                        System.out.println("Escolhendo melhor no");
+                                        newNode = BestChoice(servicesMatched);
+                                        servicesMatched.remove(newNode);
+                                        System.out.println("no escolhido "+newNode.getService().getUri().toString());
 					if(graph.getForbiddenNodes().contains(newNode))
 					{
-//						PEGADINHADOMALANDRO.remove(newNode);
-						newNode = null;
-					}
+                                            System.out.println("este no pertence a lista de nos proibidos");
+                                            newNode = null;
+                                        }
 
 				}
 				//add the new node and the others compatible nodes (services) but set their edges to no fixed
 				if (newNode != null)
 				{
+                                        System.out.println("no definitivo "+newNode.getService().getUri().toString());
 					graph.addNode(newNode);
 					edge.setEdge(newNode, edge.getDestinyNode(),true);
-//					for (int i = 0; i < PEGADINHADOMALANDRO.size() ; i++)
-//					{
-//						Node alternativeNode = PEGADINHADOMALANDRO.get(i);
-//						graph.addNode(alternativeNode);
-//						graph.createEdge(alternativeNode, edge.getDestinyNode(), false);
-//					}
-					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
-					if (graph.thereIsAPath(edge.getDestinyNode(),annoyingNode))
+					for (int i = 0; i < servicesMatched.size() ; i++)
 					{
+						Node alternativeNode = new Node(servicesMatched.get(i), null);
+						graph.addNode(alternativeNode);
+						graph.addEdge(alternativeNode, edge.getDestinyNode(), servicesMatched.get(i).getUri(), false);
+					}
+					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
+                                        System.out.println("testando a existência de ciclo");
+					if (graph.thereIsAPath(edge.getDestinyNode(),newNode))
+					{
+                                                System.out.printf("Existe um ciclo");
 						graph.addForbiddenNode(annoyingNode);
 						graph.removeNodeUntilNoFixedEdge(annoyingNode, null); //power power rangers verificar se eh null mesmo
 					}
+                                        System.out.println("no adicionado com sucesso");
 				}
 				else //remove the new node because the pendencies cant be solved... i said it is a annoying node
 				{
+                                                System.out.printf("a pendencia nao pode ser sanada, removendo o "+annoyingNode.getService().getUri());
 						graph.addForbiddenNode(annoyingNode);
 						graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
 						if (!graph.getNodes().contains(finalNode))
 						{
+                                                        System.out.println("SEM SOLUCAO");
 							//oh my god of pagode what can i do?
 							//just cry little butterfly
 						}
@@ -304,17 +331,18 @@ public class FunctionalEngine implements IEngine{
 	
 	/**
 	 * Method that classifies the obtained results.  
-	 * @param services - A service
+	 * @param service - A service
 	 * @param request - A request 
 	 */
 	public Service classifyResults(Service service, Query request) {
 		int levelMatching;
 		Properties property = MessageProperties.getInstance();
-		
+		///efraim modificou essa funcao
 		levelMatching = (int) returnLevelMatching(resultInputs, resultOutputs);
-		
+		///efraim modificou para false
 		//Writing the correspondences
-		
+                this.PETreatment = false;
+
 		switch(levelMatching) {
 			case (FunctionalMatcher.EXACT): {
 				if (isFiltered(property.getProperty("label_exact")) && (this.PETreatment == true)) {
@@ -488,11 +516,11 @@ public class FunctionalEngine implements IEngine{
 				levelMatching = resultInput.get(i).getSimilarityDegree(); 
 			}
 		}
-		for(int i=0; i < resultOutput.size(); i++) {
-			if(resultOutput.get(i).getSimilarityDegree() < levelMatching) {
-				levelMatching = resultOutput.get(i).getSimilarityDegree();
-			}
-		}
+//		for(int i=0; i < resultOutput.size(); i++) {
+//			if(resultOutput.get(i).getSimilarityDegree() < levelMatching) {
+//				levelMatching = resultOutput.get(i).getSimilarityDegree();
+//			}
+//		}
 		return levelMatching;
 	}
 	
@@ -558,6 +586,10 @@ public class FunctionalEngine implements IEngine{
 	public void setServicesMatched(ArrayList<Service> servicesMatched) {
 		this.servicesMatched = servicesMatched;
 	}
+
+    private Node BestChoice(ArrayList<Service> servicesMatched) {
+        return new Node(servicesMatched.get(0), null);
+    }
 	
 	
 	

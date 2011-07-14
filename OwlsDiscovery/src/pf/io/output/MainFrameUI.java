@@ -811,11 +811,9 @@ public class MainFrameUI extends JFrame implements ActionListener {
 	// Events
 	
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("hehe gary");
 //		Lore
 		this.txtRequest.setText("C:\\xampp\\htdocs\\queries\\testes\\r9.owls");
 		this.txtService.setText("C:\\xampp\\htdocs\\services\\testes1");
-
 		
 		if (e.getSource() == btnRequest) {
 			fileChooser = new JFileChooser();
