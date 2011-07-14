@@ -1,0 +1,90 @@
+DesignedThing 1PersonBicycle 2PersonBicycle 2WheeledCar 3WheeledCar 4WheeledCar Aircraft Airplane Automobile Bicycle Car CheapCar F1Car Moto Plane SportsCar Suzuki Vehicle VW WheeledVehicle
+MoveableThing 1PersonBicycle 2PersonBicycle 2WheeledCar 3WheeledCar 4WheeledCar Aircraft Airplane Automobile Auto Bicycle Car CheapCar F1Car ExpensiveCar Moto PeopleTransporter SportsCar Suzuki Transporter Vehicle VW
+1PersonBicycle Bicycle Transporter PeopleTransporter Automobile Machine Object MoveableThing DesignedThing
+Machine 1PersonBicycle 2PersonBicycle 2WheeledCar 3WheeledCar 4WheeledCar Auto Automobile Bicycle Car CheapCar ExpensiveCar F1Car Moto Plane Machine SportsCar Vehicle WheeledVehicle Object DesignedThing
+2PersonBicycle Bicycle Transporter PeopleTransporter Automobile Machine Object MoveableThing DesignedThing
+2WheeledCar Moto Bicycle 1PersonBicycle 2PersonBicycle Machine Object MoveableThing DesignedThing
+3WheeledCar Transporter PeopleTransporter Car Automobile Vehicle Auto CheapCar ExpensiveCar Machine Object MoveableThing DesignedThing
+4WheeledCar ExpensiveCar Transporter PeopleTransporter Car Automobile Vehicle Auto CheapCar 3WheeledCar F1Car Machine Object MoveableThing DesignedThing
+Aircraft Plane Airplane Machine Object MoveableThing DesignedThing
+Airplane Aircraft Plane Machine Object MoveableThing DesignedThing
+Anything Thing
+Appetizer Cocktail Liquid
+Author Publisher Designer Person
+Auto CheapCar ExpensiveCar 3WheeledCar 4WheeledCar Transporter PeopleTransporter Car Automobile Vehicle WheeledVehicle Machine Object MoveableThing DesignedThing
+Automobile Vehicle Auto CheapCar ExpensiveCar 3WheeledCar 4WheeledCar Transporter PeopleTransporter Car Bicycle 1PersonBicycle 2PersonBicycle Machine Object MoveableThing DesignedThing
+Beer Liquid ColaBeer Object
+Bicycle 2WheeledCar Transporter PeopleTransporter Automobile 1PersonBicycle 2PersonBicycle Machine Object MoveableThing
+Black Color
+Blue Color
+Brown Color
+CapableSoftwareEngineering Person ITProfessional SoftwareEngineeringGraduate
+Car Automobile Vehicle Auto CheapCar ExpensiveCar 3WheeledCar 4WheeledCar Transporter PeopleTransporter WheeledVehicle Machine Object MoveableThing DesignedThing
+Century Millenium
+CheapCar ExpensiveCar 3WheeledCar 4WheeledCar Transporter PeopleTransporter Car Automobile Vehicle Auto Suzuki WheeledVehicle Machine Object MoveableThing DesignedThing
+Cocktail Liquid IrishCoffe CoffeeWithWhiskey
+CoffeeWithWhiskey Liquid DrinksCoffe Whiskey Cocktail
+Cola ColaBeer MixeryCola Liquid
+ColaBeer Cola Liquid
+Color Green Yellow Black Brown White Blue Pink Orange
+Cycle Year Use Quality
+Designer ITProfessional SoftwareEngineeringGraduate CapableSoftwareEngineering Person 
+DrinksCoffee CoffeeWithWhiskey IrishCoffee Liquid
+Driver Person MoreGPWinner F1WorldChampion RacyCarDriver
+EuropeRaxedPrice GermanTaxedPrice TaxedPriceInEuro UntangibleObjects Price
+ExpensiveCar Transporter PeopleTransporter Car Automobile Vehicle Auto CheapCar 3WheeledCar 4WheeledCar SportsCar F1Car WheeledVehicle Machine Object MoveableThing DesignedThing
+F1Car ExpensiveCar Transporter PeopleTransporter Car Automobile Vehicle Auto 4WheeledCar SportsCar WheeledVehicle Machine Object MoveableThing DesignedThing
+F1WorldChampion MoreGPWinner Person Driver RacyCarDriver
+Funcionality Technology
+GermanTaxedPrice TaxedPriceInEuro EuropeRaxedPrice UntangibleObjects Price
+Green Color
+Hope UntangibleObjects
+IrishCoffe DrinksCoffe Liquid CoffeeWithWhiskey Cocktail
+ITProfessional SoftwareEngineeringGraduate CapableSoftwareEngineering Person Designer
+LeapYear Year
+Liquid Beer DrinksCoffee CoffeeWithWhiskey IrishCoffee Whiskey Cola ColaBeer MixeryCola Appetizer Cocktail
+MaxPrice Price
+Millenium Century
+MixeryCola ColaBeer Cola
+MoreGPWinner Driver Person RacyCarDriver
+Moto 2WheeledCar Bicycle 1PersonBicycle 2PersonBicycle WheeledVehicle Machine Object MoveableThing DesignedThing
+News UntangibleObjects Report Object 
+None Nothing 
+Nothing None
+Notices Report FeedBack
+Orange Color
+PeopleTransporter Car Automobile Vehicle Auto CheapCar 3WheeledCar 4WheeledCar ExpensiveCar Transporter Bicycle 1PersonBicycle 2PersonBicycle WheeledVehicle MoveableThing
+Person Reader User Author Publisher Designer ITProfessionals Driver RacyCarDriver
+Pink Color
+Plane Airplane Aircraft Machine Object MoveableThing DesignedThing
+Price TaxedPrice RecommendedTaxedPrice TaxedPriceInDollar TaxedPriceInEuro USTaxedPrice GermanTaxedPrice EuropeRaxedPrice RecommendPrice RecommendedPriceInDollar RecommendedPriceInEuro TaxFreePrixe MaxPrice UntangibleObjects Object 
+Publisher Author Person Designer
+Quality UntangibleObjects Cycle
+RacyCarDriver Driver Person MoreGPWinner F1WorldChampion
+Reader User Person
+RecommendedPriceInDollar RecommendPrice UntangibleObjects Price
+RecommendedPriceInEuro RecommendPrice UntangibleObjects Price
+RecommendedTaxedPrice TaxedPriceInDollar TaxedPriceInEuro USTaxedPrice GermanTaxedPrice EuropeRaxedPrice
+RecommendPrice RecommendedPriceInDollar RecommendedPriceInEuro UntangibleObjects Price
+Report FeedBack News Notices
+SoftwareEngineeringGraduate CapableSoftwareEngineering Person ITProfessional
+SportsCar F1Car ExpensiveCar Transporter PeopleTransporter Car Automobile Vehicle Auto 4WheeledCar WheeledVehicle Machine Object MoveableThing DesignedThing
+Suzuki CheapCar 4WheeledCar Transporter PeopleTransporter Car Automobile Vehicle Auto WheeledVehicle Machine MoveableThing DesignedThing
+TaxedPrice RecommendedTaxedPrice TaxedPriceInDollar TaxedPriceInEuro USTaxedPrice GermanTaxedPrice EuropeRaxedPrice MaxPrice UntangibleObjects Price
+TaxedPriceInDollar USTaxedPrice UntangibleObjects Price
+TaxedPriceInEuro GermanTaxedPrice EuropeRaxedPrice UntangibleObjects Price
+TaxFreePrixe Price
+Technology UntangibleObjects News Funcionality 
+Thing Anything Machine Object
+Object Thing WheeledVehicle Whiskey Vehicle Suzuki Report Plane Moto F1Car ExpensiveCar Cycle CheapCar Car Bicycle Beer Automobile Auto Airplane Aircraft 4WheeledCar 3WheeledCar 2WheeledCar 2PersonBicycle Machine 1PersonBicycle
+Transporter PeopleTransporter Car Automobile Vehicle Auto CheapCar 3WheeledCar 4WheeledCar ExpensiveCar Bicycle 1PersonBicycle 2PersonBicycle WheeledVehicle Machine MoveableThing DesignedThing
+UntangibleObjects Price TaxedPrice RecommendedTaxedPrice TaxedPriceInDollar TaxedPriceInEuro USTaxedPrice GermanTaxedPrice EuropeRaxedPrice RecommendPrice RecommendedPriceInDollar RecommendedPriceInEuro TaxFreePrixe MaxPrice Hope Technology Quality Report Cycle
+User Reader Person
+USTaxedPrice TaxedPriceInDollar UntangibleObjects Price
+Vehicle Auto CheapCar ExpensiveCar 3WheeledCar 4WheeledCar Transporter PeopleTransporter Car Automobile WheeledVehicle Machine Object MoveableThing DesignedThing
+VW CheapCar Object 4WheeledCar Transporter PeopleTransporter Car Automobile Vehicle Auto WheeledVehicle Machine MoveableThing DesignedThing
+Whiskey Liquid Appetizer Drink Liquid
+White Color
+WheeledVehicle Object Moto Bicycle Car CheapCar Automobile Auto Transporter PeopleTransporter Automobile Vehicle ExpensiveCar SportsCar Moto Vehicle Machine DesignedThing
+Year LeapYear Century Cycle
+Yellow Color

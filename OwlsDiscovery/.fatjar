@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Tue Aug 18 19:57:05 GMT-03:00 2009
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=C\:\\Documents and Settings\\Rodrigo\\Desktop\\owlsDiscovey.jar
+manifest.mergeall=true
+manifest.mainclass=pf.io.output.MainFrameUI
+manifest.file=<createnew>
+jarname.isextern=true
+onejar.expand=
+excludes=
+includes=

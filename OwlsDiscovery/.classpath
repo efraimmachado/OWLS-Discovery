@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="lib"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/api.jar"/>
+	<classpathentry kind="lib" path="lib/arq.jar"/>
+	<classpathentry kind="lib" path="lib/aterm-java-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/dig.jar"/>
+	<classpathentry kind="lib" path="lib/epsgraphics.jar"/>
+	<classpathentry kind="lib" path="lib/icu4j.jar"/>
+	<classpathentry kind="lib" path="lib/impl.jar"/>
+	<classpathentry kind="lib" path="lib/itext-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jcommon-1.0.0-rc1.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart-1.0.0-rc1.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/rdfparser.jar"/>
+	<classpathentry kind="lib" path="lib/relaxngDatatype.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="lib/xsdlib.jar"/>
+	<classpathentry kind="lib" path="C:/Java/Projeto Final/lib/owls-api-3.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/jena/jena-2.6.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/jena/iri-0.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-jena.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-query.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-rules.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-owlapi.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-modularity.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-owlapiv3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-pellint.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-test.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-cli.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-core.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-datatypes.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-dig.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-el.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/pellet-explanation.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lorena/Documents/Ufba/PF/Programando/pellet-2.2.2/pellet-2.2.2/lib/servlet.jar"/>
+	<classpathentry kind="lib" path="C:/Java/Projeto Final/lib/slf4j-jdk14-1.6.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
