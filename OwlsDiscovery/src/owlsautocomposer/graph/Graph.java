@@ -186,7 +186,7 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         {
             Edge edge = edges.get(i);
             Node node = edge.getOriginNode();
-            if (node.equals(originNode))
+            if (node != null && node.equals(originNode))
             {
                 result.add(edge);
             }
@@ -225,4 +225,30 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         forbiddenNodes.add(node);
     }
 
+    public void print()
+    {
+        System.out.println(nodes);
+        System.out.println(edges);
+        for (int i = 0; i < edges.size(); i++)
+        {
+            if (edges.get(i).getFixedEdge())
+            {
+                System.out.println("("+edges.get(i).getOriginNode().getService().getUri()+" , "+edges.get(i).getDestinyNode().getService().getUri()+")");
+            }
+
+        }
+        
+    }
+
+    public void removeUnsed() {
+        for (int i = 0; i < edges.size(); i++)
+        {
+            if (!edges.get(i).getFixedEdge())
+            {
+                System.out.println("removendo "+edges.get(i).getOriginNode().getService().getUri());
+                nodes.remove(edges.get(i).getOriginNode());
+                edges.remove(i);
+            }
+        }
+    }
 }

@@ -157,7 +157,7 @@ public class FunctionalEngine implements IEngine{
 			//deve-se colocar o que o usuario quer na entrada, nao tem output
 			Node finalNode = null;
                         try {
-                            finalNode = new Node(new Service(inputManager.getRequest().getOutputList(), null, new URI("FINAL_STATE")), "FINAL_STATE");
+                            finalNode = new Node(new Service(inputManager.getRequest().getOutputList(), new ArrayList<URI>(), new URI("FINAL_STATE")), "FINAL_STATE");
                         } catch (URISyntaxException ex) {
                             Logger.getLogger(FunctionalEngine.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -173,7 +173,8 @@ public class FunctionalEngine implements IEngine{
                         }
 			//the next line makes the request input be used in the composition if it is necessary
                         try {
-                            inputManager.addService(new Service(null, inputManager.getRequest().getOutputList(), new URI("REQUEST_STATE")));
+                            //ficar de olho nisso... acho que o output tem que ser o input...como está ;)
+                            inputManager.addService(new Service(new ArrayList<URI>(), inputManager.getRequest().getInputList(), new URI("REQUEST_STATE")));
                         } catch (URISyntaxException ex) {
                             Logger.getLogger(FunctionalEngine.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -206,10 +207,10 @@ public class FunctionalEngine implements IEngine{
                                     ArrayList<SimilarityDegree> resultSimilarity = results.get(w);
                                     for (int t = 0; t < resultSimilarity.size(); t++)
                                     {
-                                        System.out.println("coluna numero "+(t+1));
-                                        System.out.println("REQUEST: "+resultSimilarity.get(t).getRequestParameter().toString());
-                                        System.out.println("SERVICE: "+resultSimilarity.get(t).getServiceParameter().toString());
-                                        System.out.println("DEGREE:  "+resultSimilarity.get(t).getSimilarityDegree());
+                                        //System.out.println("coluna numero "+(t+1));
+                                        //System.out.println("REQUEST: "+resultSimilarity.get(t).getRequestParameter().toString());
+                                        //System.out.println("SERVICE: "+resultSimilarity.get(t).getServiceParameter().toString());
+                                        //System.out.println("DEGREE:  "+resultSimilarity.get(t).getSimilarityDegree());
 
                                     }
                                    
@@ -256,9 +257,12 @@ public class FunctionalEngine implements IEngine{
 					edge.setEdge(newNode, edge.getDestinyNode(),true);
 					for (int i = 0; i < servicesMatched.size() ; i++)
 					{
-						Node alternativeNode = new Node(servicesMatched.get(i), null);
-						graph.addNode(alternativeNode);
-						graph.addEdge(alternativeNode, edge.getDestinyNode(), servicesMatched.get(i).getUri(), false);
+                                            if (servicesMatched.get(i).getDegreeMatch()!= null)
+                                            {
+                                                Node alternativeNode = new Node(servicesMatched.get(i), null);
+                                                graph.addNode(alternativeNode);
+                                                graph.addEdge(alternativeNode, edge.getDestinyNode(), servicesMatched.get(i).getUri(), false);
+                                            }
 					}
 					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
                                         System.out.println("testando a existência de ciclo");
@@ -285,6 +289,8 @@ public class FunctionalEngine implements IEngine{
 				//take new pendencies...
 				pendencyEdges = graph.getPendencyEdges();
 			}
+                        graph.removeUnsed();
+                        graph.print();
 
 		}
 		long endTime = System.currentTimeMillis();
@@ -588,7 +594,48 @@ public class FunctionalEngine implements IEngine{
 	}
 
     private Node BestChoice(ArrayList<Service> servicesMatched) {
-        return new Node(servicesMatched.get(0), null);
+
+        int result = 0;
+        int maxDegree = 0;
+        int minInput  = Integer.MAX_VALUE;
+        for (int i = 0; i < servicesMatched.size(); i++)
+        {
+            int valor = 0; //grau.equals("FAIL") = true, undestood?
+            String grau = servicesMatched.get(i).getDegreeMatch();
+            if (grau == null)
+                continue;
+            else if(grau.equals("EXACT"))
+                valor = 4;
+            else if(grau.equals("SUBSUMES"))
+                valor = 3;
+            else if (grau.equals("PLUGIN"))
+                valor = 2;
+            else if (grau.equals("SIBLING"))
+                valor = 1;
+//            else if (grau.equals("FAIL"))
+//                valor = 0;
+            //System.out.println("Antes maxdegree "+maxDegree+" mininput "+minInput);
+            System.out.println("Serviço "+servicesMatched.get(i).getUri());
+            System.out.println("grau "+valor);
+            System.out.println("numeroinput "+servicesMatched.get(i).getInputList().size());
+
+            if (valor > maxDegree)
+            {
+                result = i;
+                maxDegree = valor;
+                minInput = servicesMatched.get(i).getInputList().size();
+            }
+            else if(valor == maxDegree)
+            {
+                if (servicesMatched.get(i).getInputList().size() < minInput)
+                {
+                    result = i;
+                    minInput = servicesMatched.get(i).getInputList().size();
+                }
+            }
+            System.out.println("Depois maxdegree "+maxDegree+" mininput "+minInput);
+        }
+        return new Node(servicesMatched.get(result), null);
     }
 	
 	

@@ -467,6 +467,9 @@ public class FunctionalMatcher implements IMatcher {
         URI requestParameter = null;
         URI serviceParameter = null;
 
+        System.out.println("INCIANDO COMPOSITIONALDEGREE COM:");
+        System.out.println(serviceParameters);
+        System.out.println(requestParameters);
         for (int i = 0; i < requestParameters.size(); i++) {
             requestParameter = (URI) requestParameters.get(i);
             for (int j = 0; j < serviceParameters.size(); j++) {
@@ -474,42 +477,57 @@ public class FunctionalMatcher implements IMatcher {
                 /*
                  * Verifying if the parameters have the same ontology.
                  */
+                System.out.print("comparando "+serviceParameter+" com "+ requestParameter);
                 if (hasSameOntology(requestParameter, serviceParameter)) {
-                    if (isExactMatching(requestParameter, serviceParameter, typeOfParameters)) {
+                    if (isExactMatching(requestParameter, serviceParameter, typeOfParameters))
+                    {
+                        System.out.println(" >> exact");
                         matchedParameters.add(new SimilarityDegree(
                                 requestParameter, FunctionalMatcher.EXACT,
                                 serviceParameter));
-                    } else if (isPluginMatching(requestParameter,
-                            serviceParameter, typeOfParameters)) {
+                    } 
+                    else if (isPluginMatching(requestParameter, serviceParameter, typeOfParameters))
+                    {
+                        System.out.println(" >> plugin");
                         matchedParameters.add(new SimilarityDegree(
                                 requestParameter, FunctionalMatcher.PLUGIN,
                                 serviceParameter));
-                    } else if (isSubsumesMatching(requestParameter,
-                            serviceParameter, typeOfParameters)) {
+                    }
+                    else if (isSubsumesMatching(requestParameter,
+                            serviceParameter, typeOfParameters))
+                    {
+                       System.out.println(" >> subsumes");
                         matchedParameters.add(new SimilarityDegree(
                                 requestParameter, FunctionalMatcher.SUBSUMES,
                                 serviceParameter));
-                    } else if (isSiblingMatching(requestParameter,
-                            serviceParameter, typeOfParameters)) {
+                    }
+                    else if (isSiblingMatching(requestParameter,
+                            serviceParameter, typeOfParameters))
+                    {
+                        System.out.println(" >> sibling");
                         matchedParameters.add(new SimilarityDegree(
                                 requestParameter, FunctionalMatcher.SIBLING,
                                 serviceParameter));
                     }
-                } else if (typeOfParameters == FunctionalMatcher.INPUT) {
-                    matchedParameters.add(new SimilarityDegree(
-                            requestParameter, FunctionalMatcher.FAIL,
-                            serviceParameter));
-                    return matchedParameters;
+                    //If no matches were performed, return a fail match.
+                    else 
+                    {
+                        System.out.println(" >> fail");
+                        matchedParameters.add(new SimilarityDegree(requestParameter,
+                            FunctionalMatcher.FAIL, serviceParameter));
+                    }
+                }
+                //If no matches were performed, return a fail match.
+                else 
+                {
+                    System.out.println(" >> fail");
+                    matchedParameters.add(new SimilarityDegree(requestParameter,
+                            FunctionalMatcher.FAIL, serviceParameter));
                 }
             }
         }
-        /*
-         * If no matches were performed, return a fail match.
-         */
-        if (matchedParameters.size() == 0) {
-            matchedParameters.add(new SimilarityDegree(requestParameter,
-                    FunctionalMatcher.FAIL, serviceParameter));
-        }
+        for (int i = 0; i < matchedParameters.size();i++)
+            System.out.println(matchedParameters.get(i).getRequestParameter()+" , "+matchedParameters.get(i).getServiceParameter()+" , "+matchedParameters.get(i).getSimilarityDegree());
         return matchedParameters;
     }
 

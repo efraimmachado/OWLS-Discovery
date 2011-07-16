@@ -56,4 +56,9 @@ public class Edge {
     {
         return uri;
     }
+
+    public boolean getFixedEdge()
+    {
+        return fixedEdge;
+    }
 }
