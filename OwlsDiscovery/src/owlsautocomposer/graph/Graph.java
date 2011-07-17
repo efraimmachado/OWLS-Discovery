@@ -282,7 +282,8 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         
     }
 
-    public void removeUnsed() {
+    public void removeUnsed()
+    {
         for (int i = 0; i < edges.size(); i++)
         {
             if (!edges.get(i).getFixedEdge())
@@ -292,5 +293,17 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
                 edges.remove(i);
             }
         }
+    }
+
+    public boolean isForbiddenNode(Node node)
+    {
+        for (int i = 0; i < forbiddenNodes.size(); i++)
+        {
+            if (node.getService().getUri().toString().equals(forbiddenNodes.get(i).getService().getUri().toString()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

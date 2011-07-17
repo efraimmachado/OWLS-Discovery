@@ -38,9 +38,4 @@ public class Node {
     {
         return name;
     }
-
-    public boolean equals()
-    {
-        return false;
-    }
 }

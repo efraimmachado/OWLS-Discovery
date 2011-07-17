@@ -99,7 +99,6 @@ public class FunctionalEngine implements IEngine{
 		inputManager = new InputManager();
 		functionalMatcher = new FunctionalMatcher();
 		servicesMatched = new ArrayList<Service>();
-                System.out.printf("efraim > lendo os inputs");
 		inputManager.readDataEntry(args);
 		functionalMatcher.matcher(inputManager.getServices(), inputManager.getRequest());
                 
@@ -214,29 +213,27 @@ public class FunctionalEngine implements IEngine{
                                 filterResult(inputResults);
                                 //organise the matchs with its services
                                 ArrayList<CompositionalServiceInputMatch> compServicesInputMatch = CreateInputMatch(inputManager.getServices(),inputResults);
-                                System.out.println("testando a lista criada");
-                                for (int i = 0; i < compServicesInputMatch.size(); i++)
-                                {
-                                    System.out.println("Servico "+compServicesInputMatch.get(i).getService().getUri());
-                                    for (int j=0;j<compServicesInputMatch.get(i).getService().getOutputList().size();j++)
-                                        System.out.println("inputList (servico) "+compServicesInputMatch.get(i).getService().getOutputList().get(j));
-                                    for (int j=0;j<compServicesInputMatch.get(i).getInputsSimilarity().size();j++)
-                                    System.out.println("inputList (estrutura) "+compServicesInputMatch.get(i).getInputsSimilarity().get(j).getServiceParameter());
-
-                                }
-                                
-                                
-                                //choice the best service to solve the pendency
-
-
+//                                System.out.println("testando a lista criada");
+//                                for (int i = 0; i < compServicesInputMatch.size(); i++)
+//                                {
+//                                    System.out.println("Servico "+compServicesInputMatch.get(i).getService().getUri());
+//                                    for (int j=0;j<compServicesInputMatch.get(i).getService().getOutputList().size();j++)
+//                                        System.out.println("inputList (servico) "+compServicesInputMatch.get(i).getService().getOutputList().get(j));
+//                                    for (int j=0;j<compServicesInputMatch.get(i).getInputsSimilarity().size();j++)
+//                                    System.out.println("inputList (estrutura) "+compServicesInputMatch.get(i).getInputsSimilarity().get(j).getServiceParameter());
+//
+//                                }
+                               //choice the best service to solve the pendency
+                                if (true)
+                                    
 				while (newNode == null && !compServicesInputMatch.isEmpty())
 				{
                                         System.out.println("Escolhendo melhor servico");
                                         CompositionalServiceInputMatch compServInp = BestChoice(compServicesInputMatch);
                                         newNode = new Node(compServInp.getService(),null);
                                         compServicesInputMatch.remove(compServInp);
-                                        System.out.println("no escolhido "+newNode.getService().getUri());
-					if(graph.getForbiddenNodes().contains(newNode))
+                                        System.out.println("servico escolhido "+newNode.getService().getUri());
+					if(graph.isForbiddenNode(newNode))
 					{
                                             System.out.println("este no pertence a lista de nos proibidos");
                                             newNode = null;
@@ -246,7 +243,7 @@ public class FunctionalEngine implements IEngine{
 				//add the new node and the others compatible nodes (services) but set their edges to no fixed
 				if (newNode != null)
 				{
-                                        System.out.println("no definitivo "+newNode.getService().getUri());
+                                        System.out.println("servico definitivo "+newNode.getService().getUri());
 					graph.addNode(newNode);
 					edge.setEdge(newNode, edge.getDestinyNode(),true);
 //					for (int i = 0; i < compServicesInputMatch.size() ; i++)
@@ -287,11 +284,11 @@ public class FunctionalEngine implements IEngine{
                                                         {
                                                             graph.getEdges().get(q).setEdge(null,graph.getEdges().get(q).getDestinyNode() , true);
                                                         }
-                                                        else if(graph.getEdges().get(q).getDestinyNode() == annoyingNode)
-                                                        {
+                                                    }
+                                                    else if(graph.getEdges().get(q).getDestinyNode() == annoyingNode)
+                                                    {
                                                             System.out.println("removendo "+graph.getEdges().get(q));
                                                             graph.getEdges().remove(graph.getEdges().get(q));
-                                                        }
                                                     }
                                                 }
 						//graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
@@ -769,7 +766,7 @@ public class FunctionalEngine implements IEngine{
                     //inputChoosenIndex   = j;
                     maxDegree = degreeValue;
                     minInput = serviceInputMatch.getService().getInputList().size();
-                    System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
+                    //System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
                 }
                 else if(degreeValue == maxDegree)
                 {
@@ -778,14 +775,14 @@ public class FunctionalEngine implements IEngine{
                         serviceChoosenIndex = i;
                         //inputChoosenIndex   = j;
                         minInput = serviceInputMatch.getService().getInputList().size();
-                        System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
+                        //System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
                     }
                 }
             }
         }
-        System.out.println("grau "+maxDegree+" | "+"numero de inputs "+minInput);
-        for (int i = 0; i < servicesInputMatch.get(serviceChoosenIndex).getService().getInputList().size();i++)
-            System.out.println(">>"+servicesInputMatch.get(serviceChoosenIndex).getService().getInputList().get(i));
+        //System.out.println("grau "+maxDegree+" | "+"numero de inputs "+minInput);
+        //for (int i = 0; i < servicesInputMatch.get(serviceChoosenIndex).getService().getInputList().size();i++)
+           //System.out.println(">>"+servicesInputMatch.get(serviceChoosenIndex).getService().getInputList().get(i));
         return servicesInputMatch.get(serviceChoosenIndex);
     }
 
@@ -795,11 +792,11 @@ public class FunctionalEngine implements IEngine{
         for (int i = 0; i < inputResults.size(); i++)
         {
             ArrayList<SimilarityDegree> serviceInputResult = inputResults.get(i);
-            System.out.println("servico "+inputManager.getServices().get(i).getUri());
-            System.out.println("inputs antes "+inputResults.get(i));
+           // System.out.println("servico "+inputManager.getServices().get(i).getUri());
+            //System.out.println("inputs antes "+inputResults.get(i));
             for (int j = 0; j < serviceInputResult.size(); j++)
             {
-                System.out.println(serviceInputResult.get(j).getServiceParameter());
+                //System.out.println(serviceInputResult.get(j).getServiceParameter());
     		switch((int)serviceInputResult.get(j).getSimilarityDegree())
                 {
 			case (FunctionalMatcher.EXACT): {
@@ -902,7 +899,7 @@ public class FunctionalEngine implements IEngine{
 			}
                 }
             }
-            System.out.println("inputs depois "+inputResults.get(i));
+         //   System.out.println("inputs depois "+inputResults.get(i));
 //            if (inputResults.get(i).size() == 0)
 //            {
 //                i--;
@@ -912,6 +909,7 @@ public class FunctionalEngine implements IEngine{
 
     private ArrayList<CompositionalServiceInputMatch> CreateInputMatch(ArrayList<Service> services, ArrayList<ArrayList<SimilarityDegree>> inputResults)
     {
+        System.out.println("crindo lista de matching");
         ArrayList<CompositionalServiceInputMatch> result = new ArrayList<CompositionalServiceInputMatch>();
         for (int i = 0; i < inputResults.size(); i++)
         {
