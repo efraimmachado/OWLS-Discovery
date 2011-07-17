@@ -76,8 +76,8 @@ public class Graph {
 //that function can be the target of softwares eng.s because it makes the cyclomatic complexity grows up and it looks like (a little) a megazord  because it removes and add things ;)
 public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
 {
-    //maybe i have to verify if the node is null because it is recursive in a graph, ie, two differents calls of a same function can try to delete the node...
-    //well, it is not concurrently but i dont know if i can pass a null to a arraylist (see the if condition above)
+    //maybe i have to verify if the node is null because it is recursive in a graph, ie, two differents calls of a same function can try to delete the same node...
+    //well, it is not make concurrently but i dont know if i can pass a null object to a arraylist (see the if condition above)
 
     if (nodes.contains(node))
     {
@@ -95,19 +95,22 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
             System.out.println("existem arestas para o no");
             for (int i = 0; i < edgesToNode.size(); i++)
             {
-                System.out.println("testando se existe aresta equivalente a "+edgesToNode.get(i));
+                System.out.println("testando se existe aresta equivalente a "+fromThatEdge);
                 if (fromThatEdge == edgesToNode.get(i).getEquivalentEdge())
                 {
+                    //É NECESSARIO COLOCAR AS OUTRAS ARESTAS EQUIVALENTES A ESTA NOVA ARESTA
                     System.out.println("aresta equivalente encontrada "+edgesToNode.get(i));
                     System.out.println("setando aresta para aresta fixa");
                     equivalentEdgeFound = true;
                     edgesToNode.get(i).setFixedEdge(true);
+                    edgesToNode.get(i).setEquivalentEdge(null);
 
                     System.out.println("setando todas as arestas que vao para o no como arestas fixas:");
                     ArrayList<Edge> newFixedEdges = getAllEdgesTo(edgesToNode.get(i).getOriginNode());
                     for (int j = 0; j < newFixedEdges.size(); j++)
                     {
                         newFixedEdges.get(i).setFixedEdge(true);
+                        newFixedEdges.get(i).setEquivalentEdge(edgesToNode.get(i));
                         System.out.println(newFixedEdges.get(i));
                     }
                 }
@@ -146,9 +149,9 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
     }
 }
 
-    public void addEdge(Node originNode, Node destinyNode, URI uri, boolean fixedEdge)
+    public void addEdge(Node originNode, Node destinyNode, URI uri, Edge equivalentEdge, boolean fixedEdge)
     {
-        Edge newEdge = new Edge(originNode, destinyNode,uri, fixedEdge, null);
+        Edge newEdge = new Edge(originNode, destinyNode,uri, fixedEdge, equivalentEdge);
         edges.add(newEdge);
     }
 

@@ -62,6 +62,11 @@ public class Edge {
         return fixedEdge;
     }
 
+    public void setEquivalentEdge(Edge edge)
+    {
+        equivalentEdge = edge;
+    }
+
     @Override
     public String toString()
     {

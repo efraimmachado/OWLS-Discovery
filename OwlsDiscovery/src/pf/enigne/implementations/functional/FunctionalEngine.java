@@ -171,7 +171,7 @@ public class FunctionalEngine implements IEngine{
                         ArrayList<URI> NodeInputs = finalNode.getService().getInputList();
                         for (int k = 0; k < NodeInputs.size(); k++)
                         {
-        			graph.addEdge(null, finalNode, NodeInputs.get(k),  true);//deve adicionar uma aresta para cada input dele, ou seja, para cada output da requisicao
+        			graph.addEdge(null, finalNode, NodeInputs.get(k),null,  true);//deve adicionar uma aresta para cada input dele, ou seja, para cada output da requisicao
                         }
 			//the next line makes the request input be used in the composition if it is necessary
                         try {
@@ -234,7 +234,7 @@ public class FunctionalEngine implements IEngine{
                                         System.out.println("Escolhendo melhor servico");
                                         CompositionalServiceInputMatch compServInp = BestChoice(compServicesInputMatch);
                                         newNode = new Node(compServInp.getService(),null);
-                                        compServicesInputMatch.remove(compServInp.getService());
+                                        compServicesInputMatch.remove(compServInp);
                                         System.out.println("no escolhido "+newNode.getService().getUri());
 					if(graph.getForbiddenNodes().contains(newNode))
 					{
@@ -251,9 +251,10 @@ public class FunctionalEngine implements IEngine{
 					edge.setEdge(newNode, edge.getDestinyNode(),true);
 					for (int i = 0; i < compServicesInputMatch.size() ; i++)
 					{
+                                            System.out.println("adicionando nos alternativos "+compServicesInputMatch.get(i).getService().getUri());
                                             Node alternativeNode = new Node(compServicesInputMatch.get(i).getService(), null);
                                             graph.addNode(alternativeNode);
-                                            graph.addEdge(alternativeNode, edge.getDestinyNode(), edge.getUri(), false);
+                                            graph.addEdge(alternativeNode, edge.getDestinyNode(), edge.getUri(),edge, false);
 					}
 					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
                                         System.out.println("testando a existência de ciclo");
@@ -268,7 +269,7 @@ public class FunctionalEngine implements IEngine{
                                         NodeInputs = newNode.getService().getInputList();
                                         for (int k = 0; k < NodeInputs.size(); k++)
                                         {
-                                                graph.addEdge(null, newNode, NodeInputs.get(k),  true);//deve adicionar uma aresta para cada input dele, ou seja, para cada output da requisicao
+                                                graph.addEdge(null, newNode, NodeInputs.get(k),null,  true);//deve adicionar uma aresta para cada input dele, ou seja, para cada output da requisicao
                                         }
 				}
 				else //remove the new node because the pendencies cant be solved... i said it is a annoying node
