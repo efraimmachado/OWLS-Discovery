@@ -184,7 +184,9 @@ public class FunctionalEngine implements IEngine{
 			ArrayList<Edge> pendencyEdges = graph.getPendencyEdges();
 			while(pendencyEdges.size() > 0 && noSolution == false)
 			{
-                                System.out.println("Existem "+pendencyEdges.size()+" pendências");
+                                System.out.println("Pendências:");
+                                for (int i = 0; i< pendencyEdges.size(); i++)
+                                    System.out.println(pendencyEdges.get(i).getUri());
 				//take the first pendency. it looks like fifo... i guess ;)
 				Edge edge = pendencyEdges.get(0);
 				Node newNode = null;
@@ -218,7 +220,8 @@ public class FunctionalEngine implements IEngine{
                                     System.out.println("Servico "+compServicesInputMatch.get(i).getService().getUri());
                                     for (int j=0;j<compServicesInputMatch.get(i).getService().getOutputList().size();j++)
                                         System.out.println("inputList (servico) "+compServicesInputMatch.get(i).getService().getOutputList().get(j));
-                                    System.out.println("inputList"+compServicesInputMatch.get(i).getInputsSimilarity().get(0).getServiceParameter());
+                                    for (int j=0;j<compServicesInputMatch.get(i).getInputsSimilarity().size();j++)
+                                    System.out.println("inputList (estrutura) "+compServicesInputMatch.get(i).getInputsSimilarity().get(j).getServiceParameter());
 
                                 }
                                 
@@ -261,11 +264,18 @@ public class FunctionalEngine implements IEngine{
 						graph.removeNodeUntilNoFixedEdge(annoyingNode, null); //power power rangers verificar se eh null mesmo
 					}
                                         System.out.println("no adicionado com sucesso");
+                                        //adding more new pendencies (the new node ^^)
+                                        NodeInputs = newNode.getService().getInputList();
+                                        for (int k = 0; k < NodeInputs.size(); k++)
+                                        {
+                                                graph.addEdge(null, newNode, NodeInputs.get(k),  true);//deve adicionar uma aresta para cada input dele, ou seja, para cada output da requisicao
+                                        }
 				}
 				else //remove the new node because the pendencies cant be solved... i said it is a annoying node
 				{
                                                 System.out.println("a pendencia nao pode ser sanada, removendo o "+annoyingNode.getService().getUri());
 						graph.addForbiddenNode(annoyingNode);
+                                                graph.print();
 						graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
 						if (!graph.getNodes().contains(finalNode))
 						{
@@ -277,11 +287,11 @@ public class FunctionalEngine implements IEngine{
 			}
                         if (noSolution)
                         {
-                            System.out.println("SOLUCAO IMPOSSIVEL");
+                            System.out.println("\nSOLUCAO IMPOSSIVEL");
                         }
                         else
                         {
-                            System.out.println("SOLUCAO ENCONTRADA");
+                            System.out.println("\nSOLUCAO ENCONTRADA");
                         }
                         graph.removeUnsed();
                         graph.print();
@@ -740,7 +750,8 @@ public class FunctionalEngine implements IEngine{
                     serviceChoosenIndex = i;
                     //inputChoosenIndex   = j;
                     maxDegree = degreeValue;
-                    minInput = inputManager.getServices().get(i).getInputList().size();
+                    minInput = serviceInputMatch.getService().getInputList().size();
+                    System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
                 }
                 else if(degreeValue == maxDegree)
                 {
@@ -748,40 +759,16 @@ public class FunctionalEngine implements IEngine{
                     {
                         serviceChoosenIndex = i;
                         //inputChoosenIndex   = j;
-                        minInput = inputManager.getServices().get(i).getInputList().size();
+                        minInput = serviceInputMatch.getService().getInputList().size();
+                        System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
                     }
                 }
             }
         }
+        System.out.println("grau "+maxDegree+" | "+"numero de inputs "+minInput);
+        for (int i = 0; i < servicesInputMatch.get(serviceChoosenIndex).getService().getInputList().size();i++)
+            System.out.println(">>"+servicesInputMatch.get(serviceChoosenIndex).getService().getInputList().get(i));
         return servicesInputMatch.get(serviceChoosenIndex);
-
-
-
-//        for (int i = 0; i < servicesMatched.size(); i++)
-//        {
-//            int valor = 0; //grau.equals("FAIL") = true, undestood?
-//            String grau = servicesMatched.get(i).getDegreeMatch();
-//            System.out.println("Serviço "+servicesMatched.get(i).getUri());
-//            System.out.println("grau "+valor);
-//            System.out.println("numeroinput "+servicesMatched.get(i).getInputList().size());
-//
-//            if (valor > maxDegree)
-//            {
-//                serviceChoosenIndex = i;
-//                maxDegree = valor;
-//                minInput = servicesMatched.get(i).getInputList().size();
-//            }
-//            else if(valor == maxDegree)
-//            {
-//                if (servicesMatched.get(i).getInputList().size() < minInput)
-//                {
-//                    serviceChoosenIndex = i;
-//                    minInput = servicesMatched.get(i).getInputList().size();
-//                }
-//            }
-//            System.out.println("Depois maxdegree "+maxDegree+" mininput "+minInput);
-//        }
-//        return new Node(servicesMatched.get(serviceChoosenIndex), null);
     }
 
     private void filterResult(ArrayList<ArrayList<SimilarityDegree>> inputResults) {

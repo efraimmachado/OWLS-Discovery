@@ -61,4 +61,28 @@ public class Edge {
     {
         return fixedEdge;
     }
+
+    @Override
+    public String toString()
+    {
+        String result = "(";
+        if (getOriginNode() != null)
+        {
+            result += getOriginNode().getService().getUri()+" , ";
+        }
+        else
+        {
+           result += "NULL , ";
+        }
+        if (getDestinyNode() != null)
+        {
+            result += getDestinyNode().getService().getUri();
+        }
+        else
+        {
+           result += "NULL";
+        }
+        result += ")";
+        return result;
+    }
 }

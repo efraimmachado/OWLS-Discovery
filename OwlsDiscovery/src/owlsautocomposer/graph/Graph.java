@@ -78,27 +78,37 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
 {
     //maybe i have to verify if the node is null because it is recursive in a graph, ie, two differents calls of a same function can try to delete the node...
     //well, it is not concurrently but i dont know if i can pass a null to a arraylist (see the if condition above)
+
     if (nodes.contains(node))
     {
+        System.out.println("removendo "+node.getService().getUri());
         boolean equivalentEdgeFound = false;
         ArrayList<Edge> edgesToNode = getAllEdgesTo(node);
         if (fromThatEdge == null)
         {
+            System.out.println("no folha");
+            System.out.println("removendo arestas para o no "+node.getService().getUri());
             edges.remove(edgesToNode);
         }
         else
         {
+            System.out.println("existem arestas para o no");
             for (int i = 0; i < edgesToNode.size(); i++)
             {
-                if (fromThatEdge != null && fromThatEdge == edgesToNode.get(i).getEquivalentEdge())
+                System.out.println("testando se existe aresta equivalente a "+edgesToNode.get(i));
+                if (fromThatEdge == edgesToNode.get(i).getEquivalentEdge())
                 {
+                    System.out.println("aresta equivalente encontrada "+edgesToNode.get(i));
+                    System.out.println("setando aresta para aresta fixa");
                     equivalentEdgeFound = true;
                     edgesToNode.get(i).setFixedEdge(true);
 
+                    System.out.println("setando todas as arestas que vao para o no como arestas fixas:");
                     ArrayList<Edge> newFixedEdges = getAllEdgesTo(edgesToNode.get(i).getOriginNode());
                     for (int j = 0; j < newFixedEdges.size(); j++)
                     {
                         newFixedEdges.get(i).setFixedEdge(true);
+                        System.out.println(newFixedEdges.get(i));
                     }
                 }
             }
@@ -106,18 +116,23 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         }
         if (equivalentEdgeFound == false)
         {
+            System.out.println("aresta equivalente nao encontrada");
             for (int i = 0; i < edgesToNode.size(); i++)
             {
+                System.out.println("removendo no "+edgesToNode.get(i).getOriginNode());
                 removeNodeUntilNoFixedEdge(edgesToNode.get(i).getOriginNode(), null);
             }
             ArrayList<Edge> edgesFromNode = getAllEdgesFrom(node);
+            System.out.println("removendo o no "+node.getService().getUri());
             nodes.remove(node);
             //node.destroy();
+            System.out.println("para todas as arestas que saem do no acima, remova-as");
             for (int i = 0; i < edgesFromNode.size(); i++)
             {
                 Edge edge = edgesFromNode.get(i);
                 if (edge.getDestinyNode() != null)
                 {
+                    System.out.println("removendo o no "+edge.getDestinyNode().getService().getUri());
                     removeNodeUntilNoFixedEdge(edge.getDestinyNode(), edge);
                 }
                 else
@@ -227,13 +242,32 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
 
     public void print()
     {
-        System.out.println(nodes);
-        System.out.println(edges);
+        System.out.println("\nPRINTING GRAPH...\n");
+        System.out.println("NODES = "+nodes);
+        System.out.println("EDGES = "+edges);
         for (int i = 0; i < edges.size(); i++)
         {
             if (edges.get(i).getFixedEdge())
             {
-                System.out.println("("+edges.get(i).getOriginNode().getService().getUri()+" , "+edges.get(i).getDestinyNode().getService().getUri()+")");
+                System.out.print("(");
+                if (edges.get(i).getOriginNode() != null)
+                {
+                    System.out.print(edges.get(i).getOriginNode().getService().getUri()+" , ");
+                }
+                else
+                {
+                   System.out.print("NULL , ");
+                }
+                if (edges.get(i).getDestinyNode() != null)
+                {
+                    System.out.print(edges.get(i).getDestinyNode().getService().getUri());
+                }
+                else
+                {
+                   System.out.print("NULL");
+                }
+                System.out.println(")");
+
             }
 
         }
