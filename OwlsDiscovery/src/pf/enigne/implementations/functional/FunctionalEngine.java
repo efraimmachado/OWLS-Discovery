@@ -249,13 +249,13 @@ public class FunctionalEngine implements IEngine{
                                         System.out.println("no definitivo "+newNode.getService().getUri());
 					graph.addNode(newNode);
 					edge.setEdge(newNode, edge.getDestinyNode(),true);
-					for (int i = 0; i < compServicesInputMatch.size() ; i++)
-					{
-                                            System.out.println("adicionando nos alternativos "+compServicesInputMatch.get(i).getService().getUri());
-                                            Node alternativeNode = new Node(compServicesInputMatch.get(i).getService(), null);
-                                            graph.addNode(alternativeNode);
-                                            graph.addEdge(alternativeNode, edge.getDestinyNode(), edge.getUri(),edge, false);
-					}
+//					for (int i = 0; i < compServicesInputMatch.size() ; i++)
+//					{
+//                                            System.out.println("adicionando nos alternativos "+compServicesInputMatch.get(i).getService().getUri());
+//                                            Node alternativeNode = new Node(compServicesInputMatch.get(i).getService(), null);
+//                                            graph.addNode(alternativeNode);
+//                                            graph.addEdge(alternativeNode, edge.getDestinyNode(), edge.getUri(),edge, false);
+//					}
 					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
                                         System.out.println("testando a existência de ciclo");
 					if (graph.thereIsAPath(edge.getDestinyNode(),newNode))
@@ -272,12 +272,29 @@ public class FunctionalEngine implements IEngine{
                                                 graph.addEdge(null, newNode, NodeInputs.get(k),null,  true);//deve adicionar uma aresta para cada input dele, ou seja, para cada output da requisicao
                                         }
 				}
-				else //remove the new node because the pendencies cant be solved... i said it is a annoying node
+				else //remove the annoying node because the pendencies cant be solved... i said it is a annoying node
 				{
                                                 System.out.println("a pendencia nao pode ser sanada, removendo o "+annoyingNode.getService().getUri());
 						graph.addForbiddenNode(annoyingNode);
-                                                graph.print();
-						graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
+                                                //graph.print();
+                                                //System.out.println("removendo "+newNode.getService().getUri());
+                                                graph.getNodes().remove(annoyingNode);
+                                                for (int q = 0; q < graph.getEdges().size(); q++)
+                                                {
+                                                    if (graph.getEdges().get(q).getOriginNode()!= null)
+                                                    {
+                                                        if (graph.getEdges().get(q).getOriginNode() == annoyingNode)
+                                                        {
+                                                            graph.getEdges().get(q).setEdge(null,graph.getEdges().get(q).getDestinyNode() , true);
+                                                        }
+                                                        else if(graph.getEdges().get(q).getDestinyNode() == annoyingNode)
+                                                        {
+                                                            System.out.println("removendo "+graph.getEdges().get(q));
+                                                            graph.getEdges().remove(graph.getEdges().get(q));
+                                                        }
+                                                    }
+                                                }
+						//graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
 						if (!graph.getNodes().contains(finalNode))
 						{
 							noSolution = true;

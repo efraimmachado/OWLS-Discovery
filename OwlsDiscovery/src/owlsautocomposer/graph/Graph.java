@@ -155,6 +155,11 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         edges.add(newEdge);
     }
 
+    public ArrayList<Edge> getEdges()
+    {
+        return edges;
+    }
+
     public boolean thereIsAPath(Node startNode, Node finishNode)
     {
          ArrayList<Node> visitedNodes = new ArrayList<Node>();
