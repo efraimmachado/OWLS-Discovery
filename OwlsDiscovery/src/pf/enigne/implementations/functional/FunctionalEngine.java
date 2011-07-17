@@ -16,6 +16,7 @@ import pf.enigne.implementations.pe.PEEngine;
 import pf.enigne.interfaces.IEngine;
 import pf.io.input.InputManager;
 import pf.main.MainFunctionalMatcher;
+import pf.matcher.implementations.functional.CompositionalServiceInputMatch;
 import pf.matcher.implementations.functional.FunctionalMatcher;
 import pf.matcher.implementations.functional.SimilarityDegree;
 import pf.resource.MessageProperties;
@@ -154,6 +155,7 @@ public class FunctionalEngine implements IEngine{
 		else
 		{
 			Graph graph = new Graph();
+                        boolean noSolution = false;
 			//deve-se colocar o que o usuario quer na entrada, nao tem output
 			Node finalNode = null;
                         try {
@@ -180,7 +182,7 @@ public class FunctionalEngine implements IEngine{
                         }
 
 			ArrayList<Edge> pendencyEdges = graph.getPendencyEdges();
-			while(pendencyEdges.size() > 0)
+			while(pendencyEdges.size() > 0 && noSolution == false)
 			{
                                 System.out.println("Existem "+pendencyEdges.size()+" pendências");
 				//take the first pendency. it looks like fifo... i guess ;)
@@ -206,15 +208,31 @@ public class FunctionalEngine implements IEngine{
 //                                    System.out.println("outputs "+inputManager.getServices().get(i).getOutputList());
 //                                    servicesMatched.add(this.classifyCompositionalResults(inputManager.getServices().get(i),inputManager.getRequest()));
 //            			}
+                                //removing services catched by user filter (exact, subsumes....)
                                 filterResult(inputResults);
-        			//choice the best service to solve the pendency
+                                //organise the matchs with its services
+                                ArrayList<CompositionalServiceInputMatch> compServicesInputMatch = CreateInputMatch(inputManager.getServices(),inputResults);
+                                System.out.println("testando a lista criada");
+                                for (int i = 0; i < compServicesInputMatch.size(); i++)
+                                {
+                                    System.out.println("Servico "+compServicesInputMatch.get(i).getService().getUri());
+                                    for (int j=0;j<compServicesInputMatch.get(i).getService().getOutputList().size();j++)
+                                        System.out.println("inputList (servico) "+compServicesInputMatch.get(i).getService().getOutputList().get(j));
+                                    System.out.println("inputList"+compServicesInputMatch.get(i).getInputsSimilarity().get(0).getServiceParameter());
 
-				while (newNode == null && !servicesMatched.isEmpty())
+                                }
+                                
+                                
+                                //choice the best service to solve the pendency
+
+
+				while (newNode == null && !compServicesInputMatch.isEmpty())
 				{
-                                        System.out.println("Escolhendo melhor no");
-                                        newNode = BestChoice(servicesMatched);
-                                        servicesMatched.remove(newNode);
-                                        System.out.println("no escolhido "+newNode.getService().getUri().toString());
+                                        System.out.println("Escolhendo melhor servico");
+                                        CompositionalServiceInputMatch compServInp = BestChoice(compServicesInputMatch);
+                                        newNode = new Node(compServInp.getService(),null);
+                                        compServicesInputMatch.remove(compServInp.getService());
+                                        System.out.println("no escolhido "+newNode.getService().getUri());
 					if(graph.getForbiddenNodes().contains(newNode))
 					{
                                             System.out.println("este no pertence a lista de nos proibidos");
@@ -225,17 +243,14 @@ public class FunctionalEngine implements IEngine{
 				//add the new node and the others compatible nodes (services) but set their edges to no fixed
 				if (newNode != null)
 				{
-                                        System.out.println("no definitivo "+newNode.getService().getUri().toString());
+                                        System.out.println("no definitivo "+newNode.getService().getUri());
 					graph.addNode(newNode);
 					edge.setEdge(newNode, edge.getDestinyNode(),true);
-					for (int i = 0; i < servicesMatched.size() ; i++)
+					for (int i = 0; i < compServicesInputMatch.size() ; i++)
 					{
-                                            if (servicesMatched.get(i).getDegreeMatch()!= null)
-                                            {
-                                                Node alternativeNode = new Node(servicesMatched.get(i), null);
-                                                graph.addNode(alternativeNode);
-                                                graph.addEdge(alternativeNode, edge.getDestinyNode(), servicesMatched.get(i).getUri(), false);
-                                            }
+                                            Node alternativeNode = new Node(compServicesInputMatch.get(i).getService(), null);
+                                            graph.addNode(alternativeNode);
+                                            graph.addEdge(alternativeNode, edge.getDestinyNode(), edge.getUri(), false);
 					}
 					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
                                         System.out.println("testando a existência de ciclo");
@@ -249,22 +264,27 @@ public class FunctionalEngine implements IEngine{
 				}
 				else //remove the new node because the pendencies cant be solved... i said it is a annoying node
 				{
-                                                System.out.printf("a pendencia nao pode ser sanada, removendo o "+annoyingNode.getService().getUri());
+                                                System.out.println("a pendencia nao pode ser sanada, removendo o "+annoyingNode.getService().getUri());
 						graph.addForbiddenNode(annoyingNode);
 						graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
 						if (!graph.getNodes().contains(finalNode))
 						{
-                                                        System.out.println("SEM SOLUCAO");
-							//oh my god of pagode what can i do?
-							//just cry little butterfly
+							noSolution = true;
 						}
 				}
 				//take new pendencies...
 				pendencyEdges = graph.getPendencyEdges();
 			}
+                        if (noSolution)
+                        {
+                            System.out.println("SOLUCAO IMPOSSIVEL");
+                        }
+                        else
+                        {
+                            System.out.println("SOLUCAO ENCONTRADA");
+                        }
                         graph.removeUnsed();
                         graph.print();
-
 		}
 		long endTime = System.currentTimeMillis();
 
@@ -702,49 +722,66 @@ public class FunctionalEngine implements IEngine{
 		this.servicesMatched = servicesMatched;
 	}
 
-    private Node BestChoice(ArrayList<Service> servicesMatched) {
+    private CompositionalServiceInputMatch BestChoice(ArrayList<CompositionalServiceInputMatch> servicesInputMatch) {
 
-        int result = 0;
-        int maxDegree = 0;
+        int serviceChoosenIndex = 0;
+        //int inputChoosenIndex = 0;
+        double maxDegree = 0.0;
         int minInput  = Integer.MAX_VALUE;
-        for (int i = 0; i < servicesMatched.size(); i++)
-        {
-            int valor = 0; //grau.equals("FAIL") = true, undestood?
-            String grau = servicesMatched.get(i).getDegreeMatch();
-            if (grau == null)
-                continue;
-            else if(grau.equals("EXACT"))
-                valor = 4;
-            else if(grau.equals("SUBSUMES"))
-                valor = 3;
-            else if (grau.equals("PLUGIN"))
-                valor = 2;
-            else if (grau.equals("SIBLING"))
-                valor = 1;
-//            else if (grau.equals("FAIL"))
-//                valor = 0;
-            //System.out.println("Antes maxdegree "+maxDegree+" mininput "+minInput);
-            System.out.println("Serviço "+servicesMatched.get(i).getUri());
-            System.out.println("grau "+valor);
-            System.out.println("numeroinput "+servicesMatched.get(i).getInputList().size());
 
-            if (valor > maxDegree)
+        for (int i = 0; i < servicesInputMatch.size(); i++)
+        {
+            CompositionalServiceInputMatch serviceInputMatch = servicesInputMatch.get(i);
+            for (int j = 0; j < serviceInputMatch.getInputsSimilarity().size(); j++)
             {
-                result = i;
-                maxDegree = valor;
-                minInput = servicesMatched.get(i).getInputList().size();
-            }
-            else if(valor == maxDegree)
-            {
-                if (servicesMatched.get(i).getInputList().size() < minInput)
+                double degreeValue = serviceInputMatch.getInputsSimilarity().get(j).getSimilarityDegree();
+                if (degreeValue > maxDegree)
                 {
-                    result = i;
-                    minInput = servicesMatched.get(i).getInputList().size();
+                    serviceChoosenIndex = i;
+                    //inputChoosenIndex   = j;
+                    maxDegree = degreeValue;
+                    minInput = inputManager.getServices().get(i).getInputList().size();
+                }
+                else if(degreeValue == maxDegree)
+                {
+                    if (serviceInputMatch.getService().getInputList().size() < minInput)
+                    {
+                        serviceChoosenIndex = i;
+                        //inputChoosenIndex   = j;
+                        minInput = inputManager.getServices().get(i).getInputList().size();
+                    }
                 }
             }
-            System.out.println("Depois maxdegree "+maxDegree+" mininput "+minInput);
         }
-        return new Node(servicesMatched.get(result), null);
+        return servicesInputMatch.get(serviceChoosenIndex);
+
+
+
+//        for (int i = 0; i < servicesMatched.size(); i++)
+//        {
+//            int valor = 0; //grau.equals("FAIL") = true, undestood?
+//            String grau = servicesMatched.get(i).getDegreeMatch();
+//            System.out.println("Serviço "+servicesMatched.get(i).getUri());
+//            System.out.println("grau "+valor);
+//            System.out.println("numeroinput "+servicesMatched.get(i).getInputList().size());
+//
+//            if (valor > maxDegree)
+//            {
+//                serviceChoosenIndex = i;
+//                maxDegree = valor;
+//                minInput = servicesMatched.get(i).getInputList().size();
+//            }
+//            else if(valor == maxDegree)
+//            {
+//                if (servicesMatched.get(i).getInputList().size() < minInput)
+//                {
+//                    serviceChoosenIndex = i;
+//                    minInput = servicesMatched.get(i).getInputList().size();
+//                }
+//            }
+//            System.out.println("Depois maxdegree "+maxDegree+" mininput "+minInput);
+//        }
+//        return new Node(servicesMatched.get(serviceChoosenIndex), null);
     }
 
     private void filterResult(ArrayList<ArrayList<SimilarityDegree>> inputResults) {
@@ -753,9 +790,11 @@ public class FunctionalEngine implements IEngine{
         for (int i = 0; i < inputResults.size(); i++)
         {
             ArrayList<SimilarityDegree> serviceInputResult = inputResults.get(i);
+            System.out.println("servico "+inputManager.getServices().get(i).getUri());
             System.out.println("inputs antes "+inputResults.get(i));
             for (int j = 0; j < serviceInputResult.size(); j++)
             {
+                System.out.println(serviceInputResult.get(j).getServiceParameter());
     		switch((int)serviceInputResult.get(j).getSimilarityDegree())
                 {
 			case (FunctionalMatcher.EXACT): {
@@ -849,14 +888,6 @@ public class FunctionalEngine implements IEngine{
 					//MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_fail") + ") \n");
 					//MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
 				}
-                                else if (isFiltered(property.getProperty("label_fail")) && (this.hybridTreatment == true))
-                                {
-					DescriptiveEngine descriptiveEngine = new DescriptiveEngine();
-//					double resultDescriptive = descriptiveEngine.descriptiveEngineHybrid(service, request, dataHybrid.getBasicCoefficient(),
-//							dataHybrid.getStructuralCoefficient(), dataHybrid.getAncestorCoefficient(),
-//							dataHybrid.getImmediateChldCoefficient(), dataHybrid.getLeafCoefficient(),
-//							dataHybrid.getSiblingCoefficient(), dataHybrid.getThreshold(), dataHybrid.getDicitonaryPath());
-				}
                                 else
                                 {
                                     serviceInputResult.remove(j);
@@ -867,14 +898,23 @@ public class FunctionalEngine implements IEngine{
                 }
             }
             System.out.println("inputs depois "+inputResults.get(i));
-            if (inputResults.get(i).size() == 0)
+//            if (inputResults.get(i).size() == 0)
+//            {
+//                i--;
+//            }
+        }
+    }
+
+    private ArrayList<CompositionalServiceInputMatch> CreateInputMatch(ArrayList<Service> services, ArrayList<ArrayList<SimilarityDegree>> inputResults)
+    {
+        ArrayList<CompositionalServiceInputMatch> result = new ArrayList<CompositionalServiceInputMatch>();
+        for (int i = 0; i < inputResults.size(); i++)
+        {
+            if (!inputResults.get(i).isEmpty())
             {
-                i--;
+                result.add(new CompositionalServiceInputMatch(services.get(i),inputResults.get(i)));
             }
         }
-        System.out.println("fim");
+        return result;
     }
-	
-	
-	
 }
