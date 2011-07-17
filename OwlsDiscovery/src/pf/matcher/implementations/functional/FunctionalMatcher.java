@@ -462,7 +462,7 @@ public class FunctionalMatcher implements IMatcher {
 
     }
 
-    private ArrayList<SimilarityDegree> calculateCompositionalDegree(ArrayList<URI> serviceParameters, ArrayList<URI> requestParameters, char typeOfParameters) {
+    private ArrayList<SimilarityDegree> calculateCompositionalDegree(ArrayList<URI> serviceParameters, ArrayList<URI> requestParameters) {
         ArrayList<SimilarityDegree> matchedParameters = new ArrayList<SimilarityDegree>();
         URI requestParameter = null;
         URI serviceParameter = null;
@@ -479,14 +479,14 @@ public class FunctionalMatcher implements IMatcher {
                  */
                 System.out.print("comparando "+serviceParameter+" com "+ requestParameter);
                 if (hasSameOntology(requestParameter, serviceParameter)) {
-                    if (isExactMatching(requestParameter, serviceParameter, typeOfParameters))
+                    if (isExactMatching(requestParameter, serviceParameter, FunctionalMatcher.OUTPUT))
                     {
                         System.out.println(" >> exact");
                         matchedParameters.add(new SimilarityDegree(
                                 requestParameter, FunctionalMatcher.EXACT,
                                 serviceParameter));
                     } 
-                    else if (isPluginMatching(requestParameter, serviceParameter, typeOfParameters))
+                    else if (isPluginMatching(requestParameter, serviceParameter, FunctionalMatcher.OUTPUT))
                     {
                         System.out.println(" >> plugin");
                         matchedParameters.add(new SimilarityDegree(
@@ -494,7 +494,7 @@ public class FunctionalMatcher implements IMatcher {
                                 serviceParameter));
                     }
                     else if (isSubsumesMatching(requestParameter,
-                            serviceParameter, typeOfParameters))
+                            serviceParameter, FunctionalMatcher.OUTPUT))
                     {
                        System.out.println(" >> subsumes");
                         matchedParameters.add(new SimilarityDegree(
@@ -502,7 +502,7 @@ public class FunctionalMatcher implements IMatcher {
                                 serviceParameter));
                     }
                     else if (isSiblingMatching(requestParameter,
-                            serviceParameter, typeOfParameters))
+                            serviceParameter, FunctionalMatcher.OUTPUT))
                     {
                         System.out.println(" >> sibling");
                         matchedParameters.add(new SimilarityDegree(
@@ -538,7 +538,7 @@ public class FunctionalMatcher implements IMatcher {
         resultInputs = new ArrayList<ArrayList<SimilarityDegree>>();
         requestParameters = request.getOutputList();
         for (int i = 0; i < services.size(); i++) {
-            resultInputs.add(calculateCompositionalDegree(services.get(i).getOutputList(), request.getOutputList(), OUTPUT));
+            resultInputs.add(calculateCompositionalDegree(services.get(i).getOutputList(), request.getOutputList()));
             //			for (ArrayList<SimilarityDegree> param : resultInputs) {
             //				for (SimilarityDegree reg : param) {
             //					System.out.println("R I Param " + reg.getRequestParameter());
