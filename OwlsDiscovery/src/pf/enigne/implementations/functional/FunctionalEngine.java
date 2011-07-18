@@ -810,7 +810,7 @@ public class FunctionalEngine implements IEngine{
                                 {
                                     PEEngine peEngine = new PEEngine();
                                     Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
-                                    double level = peEngine.PEEngineResult(inputManager.getServices().get(i), request);
+                                    double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
                                     String result = returnResult(level);
                                     if(isFilteredPE(result))
                                     {
@@ -832,12 +832,14 @@ public class FunctionalEngine implements IEngine{
                         {
 				if (isFiltered(property.getProperty("label_plugin"))&& (this.PETreatment == true))
                                 {
-					PEEngine peEngine = new PEEngine();
-					//double level = peEngine.PEEngineResult(service, request);
-					//String result = returnResult(level);
-				//	if(isFilteredPE(result)){
-						//MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-				//	}
+                                    PEEngine peEngine = new PEEngine();
+                                    Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
+                                    double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
+                                    String result = returnResult(level);
+                                    if(isFilteredPE(result))
+                                    {
+                                        System.out.println("filtro PE ok");
+                                    }
 				}
                                 else if (isFiltered(property.getProperty("label_plugin")))
                                 {
@@ -852,13 +854,16 @@ public class FunctionalEngine implements IEngine{
 			}
 			case (FunctionalMatcher.SUBSUMES):
                         {
-				if (isFiltered(property.getProperty("label_subsumes")) && (this.PETreatment == true)) {
-					PEEngine peEngine = new PEEngine();
-//					double level = peEngine.PEEngineResult(service, request);
-//					String result = returnResult(level);
-					//if(isFilteredPE(result)){
-						//MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-					//}
+				if (isFiltered(property.getProperty("label_subsumes")) && (this.PETreatment == true))
+                                {
+                                    PEEngine peEngine = new PEEngine();
+                                    Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
+                                    double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
+                                    String result = returnResult(level);
+                                    if(isFilteredPE(result))
+                                    {
+                                        System.out.println("filtro PE ok");
+                                    }
 				}
                                 else if (isFiltered(property.getProperty("label_subsumes")))
                                 {
@@ -873,13 +878,16 @@ public class FunctionalEngine implements IEngine{
 			}
 			case (FunctionalMatcher.SIBLING):
                         {
-				if (isFiltered(property.getProperty("label_sibling")) && (this.PETreatment == true)) {
-					PEEngine peEngine = new PEEngine();
-			//		double level = peEngine.PEEngineResult(service, request);
-			//		String result = returnResult(level);
-		//			if(isFilteredPE(result)){
-		//				MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-		//			}
+				if (isFiltered(property.getProperty("label_sibling")) && (this.PETreatment == true))
+                                {
+                                    PEEngine peEngine = new PEEngine();
+                                    Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
+                                    double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
+                                    String result = returnResult(level);
+                                    if(isFilteredPE(result))
+                                    {
+                                        System.out.println("filtro PE ok");
+                                    }
 				}
                                 else if (isFiltered(property.getProperty("label_sibling")))
                                 {

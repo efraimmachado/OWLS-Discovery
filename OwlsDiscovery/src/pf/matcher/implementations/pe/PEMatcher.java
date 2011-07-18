@@ -124,11 +124,17 @@ public class PEMatcher implements IMatcher {
 	public void matcher(ArrayList<Service> services, Query request) {
 		
 		resultPreconditions = matcherPreConditions(services, request);
-		resultEffects = matcherEffects(services, request);		
-		
+		resultEffects = matcherEffects(services, request);
 	}
 	
-	/**
+	public void compositionalMatcher(ArrayList<Service> services, Query request)
+        {
+		resultPreconditions = matcherCompositionalPreConditions(services, request);
+		//resultEffects = matcherEffects(services, request);
+	}
+
+
+        /**
 	 * Method that test if the new ontology is equal the one loaded before.
 	 * 
 	 * @param localOntology -
@@ -584,8 +590,132 @@ public class PEMatcher implements IMatcher {
 		
 		return resultPreconditions;	
 	}
-	
-	public ArrayList<SimilarityDegree> matcherEffects(ArrayList<Service> services, Query request) {				
+
+        //matching the effects of service with preconditions of request (the next-service in composition)
+	public ArrayList<SimilarityDegree> matcherCompositionalPreConditions(ArrayList<Service> services, Query request) {
+
+		resultPreconditions = new ArrayList<SimilarityDegree>();
+
+		//This variable is used to save the result of the matching of all the conditions
+		ArrayList<ArrayList<SimilarityDegree>> matchResult = new ArrayList<ArrayList<SimilarityDegree>>();
+
+		//if there are service effects
+		if((services.get(0).getEffectList()!= null && !services.get(0).getEffectList().isEmpty()) &&
+                     (request.getPreconditionList()!= null && !request.getPreconditionList().isEmpty())
+                        ){
+			//loop to swap the services's conditions
+			for (ArrayList<URI> serviceCondition : services.get(0).getEffectList()) {
+
+				//This variable is used to save the result of the matching of the role Condition (Predicates are used as parameters)
+				ArrayList<ArrayList<SimilarityDegree>> conditionResult = new ArrayList<ArrayList<SimilarityDegree>>();
+
+				//loop to swap the request's conditions
+				for (ArrayList<URI> requestCondition : request.getPreconditionList()) {
+
+					//This variable is used to save the result of the matching between the Request's and Service's conditions' parameters
+					ArrayList<SimilarityDegree> predicateMatch = new ArrayList<SimilarityDegree>();
+					ArrayList<SimilarityDegree> atributeMatch = new ArrayList<SimilarityDegree>();
+
+					//This variable is used to save the result of the matching of the attributes
+					ArrayList<SimilarityDegree> atributeResult =  new ArrayList<SimilarityDegree>();
+
+					ArrayList<URI> requestPredicate = new ArrayList<URI>();
+					ArrayList<URI> requestAtributes = new ArrayList<URI>();
+					ArrayList<URI> servicePredicate = new ArrayList<URI>();
+					ArrayList<URI> serviceAtributes = new ArrayList<URI>();
+
+					requestPredicate.add(requestCondition.get(0));
+					servicePredicate.add(serviceCondition.get(0));
+
+					//Adding to the array the result of the predicate's matching
+					predicateMatch = caculateDegreeConditions(servicePredicate,requestPredicate,PRECONDITION);
+
+					requestAtributes.add(requestCondition.get(1));
+					requestAtributes.add(requestCondition.get(2));
+					serviceAtributes.add(serviceCondition.get(1));
+					serviceAtributes.add(serviceCondition.get(2));
+
+					//Adding to the array the result of the atributes's matching
+					atributeMatch = caculateDegreeConditions(serviceAtributes,requestAtributes,PRECONDITION);
+
+//					for (SimilarityDegree param : predicateMatch) {
+//							System.out.println("PREDICATE Request " + param.getRequestParameter());
+//							System.out.println("PREDICATE Service " + param.getServiceParameter());
+//							System.out.println("PREDICATE Degree " + param.getSimilarityDegree());
+//
+//					}
+//					for (SimilarityDegree param : atributeMatch) {
+//							System.out.println("ATRIBUTE Request " + param.getRequestParameter());
+//							System.out.println("ATRIBUTE Service " + param.getServiceParameter());
+//							System.out.println("ATRIBUTE Degree " + param.getSimilarityDegree());
+//					}
+
+					atributeResult =  bestAtributesMatch(atributeMatch);
+
+
+//					for (SimilarityDegree reg : atributeResult) {
+//						System.out.println("ATRIBUTE RESQUEST PARAMETER " + reg.getRequestParameter());
+//						System.out.println("ATRIBUTE SERVICE PARAMETER " + reg.getServiceParameter());
+//						System.out.println("ATRIBUTE SIMILARITY DEGREE " + reg.getSimilarityDegree());
+//					}
+
+					ArrayList<SimilarityDegree> condition = new ArrayList<SimilarityDegree>();
+
+					for (SimilarityDegree param : predicateMatch) {
+						condition.add(param);
+					}
+					for (SimilarityDegree param : atributeResult) {
+						condition.add(param);
+					}
+
+					conditionResult.add(condition);
+
+				} //endfor request
+
+//				for (ArrayList<SimilarityDegree> param : conditionResult) {
+//					for (SimilarityDegree reg : param) {
+//						System.out.println("CONDITION RESQUEST " + reg.getRequestParameter());
+//						System.out.println("CONDITION SERVICE " + reg.getServiceParameter());
+//						System.out.println("CONDITION DEGREE " + reg.getSimilarityDegree());
+//
+//					}
+//				}
+
+				matchResult.add(bestConditionsMatch(conditionResult));
+
+			} //endfor service
+
+//
+//			for (ArrayList<SimilarityDegree> param : matchResult) {
+//				for (SimilarityDegree reg : param) {
+//					System.out.println("RESULT RESQUEST PARAMETER " + reg.getRequestParameter());
+//					System.out.println("RESULT SERVICE PARAMETER " + reg.getServiceParameter());
+//					System.out.println("RESULT SIMILARITY DEGREE " + reg.getSimilarityDegree());
+//				}
+//			}
+
+
+			resultPreconditions = calculateFinalDegree(matchResult);
+
+//			for (SimilarityDegree reg : resultPreconditions) {
+//					System.out.println("PC RESQUEST " + reg.getRequestParameter());
+//					System.out.println("PC SERVICE " + reg.getServiceParameter());
+//					System.out.println("PC DEGREE " + reg.getSimilarityDegree());
+//			}
+
+		} else { // There are not services preconditions
+			SimilarityDegree test = new SimilarityDegree(URI.create(""), 4.0, URI.create(""));
+			resultPreconditions.add(test);
+
+		}
+
+		return resultPreconditions;
+	}
+
+
+
+
+        public ArrayList<SimilarityDegree> matcherEffects(ArrayList<Service> services, Query request) {
 		
 		resultEffects = new ArrayList<SimilarityDegree>();
 		
@@ -707,7 +837,129 @@ public class PEMatcher implements IMatcher {
 		return resultEffects;	
 	}
 
-		
+
+public ArrayList<SimilarityDegree> matcherCompositionalEffects(ArrayList<Service> services, Query request) {
+
+		resultEffects = new ArrayList<SimilarityDegree>();
+
+		//This variable is used to save the result of the matching of all the conditions
+		ArrayList<ArrayList<SimilarityDegree>> matchResult = new ArrayList<ArrayList<SimilarityDegree>>();
+
+		//if there are service preconditions
+		if(!(request.getEffectList().isEmpty())){
+
+			//loop to swap the request's conditions
+			for (ArrayList<URI> requestCondition : request.getEffectList()) {
+
+				//This variable is used to save the result of the matching of the role Condition (Predicates are used as parameters)
+				ArrayList<ArrayList<SimilarityDegree>> conditionResult = new ArrayList<ArrayList<SimilarityDegree>>();
+
+				//loop to swap the services's conditions
+				for (ArrayList<URI> serviceCondition : services.get(0).getEffectList()) {
+
+					//This variable is used to save the result of the matching between the Request's and Service's conditions' parameters
+					ArrayList<SimilarityDegree> predicateMatch = new ArrayList<SimilarityDegree>();
+					ArrayList<SimilarityDegree> atributeMatch = new ArrayList<SimilarityDegree>();
+
+					//This variable is used to save the result of the matching of the attributes
+					ArrayList<SimilarityDegree> atributeResult =  new ArrayList<SimilarityDegree>();
+
+					ArrayList<URI> requestPredicate = new ArrayList<URI>();
+					ArrayList<URI> requestAtributes = new ArrayList<URI>();
+					ArrayList<URI> servicePredicate = new ArrayList<URI>();
+					ArrayList<URI> serviceAtributes = new ArrayList<URI>();
+
+					requestPredicate.add(requestCondition.get(0));
+					servicePredicate.add(serviceCondition.get(0));
+
+					//Adding to the array the result of the predicate's matching
+					predicateMatch = caculateDegreeConditions(servicePredicate,requestPredicate,PRECONDITION);
+
+					requestAtributes.add(requestCondition.get(1));
+					requestAtributes.add(requestCondition.get(2));
+					serviceAtributes.add(serviceCondition.get(1));
+					serviceAtributes.add(serviceCondition.get(2));
+
+					//Adding to the array the result of the atributes's matching
+					atributeMatch = caculateDegreeConditions(serviceAtributes,requestAtributes,PRECONDITION);
+
+//					for (SimilarityDegree param : predicateMatch) {
+//							System.out.println("PREDICATE Request " + param.getRequestParameter());
+//							System.out.println("PREDICATE Service " + param.getServiceParameter());
+//							System.out.println("PREDICATE Degree " + param.getSimilarityDegree());
+//
+//					}
+//					for (SimilarityDegree param : atributeMatch) {
+//							System.out.println("ATRIBUTE Request " + param.getRequestParameter());
+//							System.out.println("ATRIBUTE Service " + param.getServiceParameter());
+//							System.out.println("ATRIBUTE Degree " + param.getSimilarityDegree());
+//					}
+
+					atributeResult =  bestAtributesMatch(atributeMatch);
+
+
+//					for (SimilarityDegree reg : atributeResult) {
+//						System.out.println("ATRIBUTE RESQUEST PARAMETER " + reg.getRequestParameter());
+//						System.out.println("ATRIBUTE SERVICE PARAMETER " + reg.getServiceParameter());
+//						System.out.println("ATRIBUTE SIMILARITY DEGREE " + reg.getSimilarityDegree());
+//					}
+
+					ArrayList<SimilarityDegree> condition = new ArrayList<SimilarityDegree>();
+
+					for (SimilarityDegree param : predicateMatch) {
+						condition.add(param);
+					}
+					for (SimilarityDegree param : atributeResult) {
+						condition.add(param);
+					}
+
+					conditionResult.add(condition);
+
+				}
+
+//				for (ArrayList<SimilarityDegree> param : conditionResult) {
+//					for (SimilarityDegree reg : param) {
+//						System.out.println("CONDITION RESQUEST " + reg.getRequestParameter());
+//						System.out.println("CONDITION SERVICE " + reg.getServiceParameter());
+//						System.out.println("CONDITION DEGREE " + reg.getSimilarityDegree());
+//
+//					}
+//				}
+
+				matchResult.add(bestConditionsMatch(conditionResult));
+
+			}
+
+//
+//			for (ArrayList<SimilarityDegree> param : matchResult) {
+//				for (SimilarityDegree reg : param) {
+//					System.out.println("RESULT RESQUEST PARAMETER " + reg.getRequestParameter());
+//					System.out.println("RESULT SERVICE PARAMETER " + reg.getServiceParameter());
+//					System.out.println("RESULT SIMILARITY DEGREE " + reg.getSimilarityDegree());
+//				}
+//			}
+
+
+			resultEffects = calculateFinalDegree(matchResult);
+
+//			for (SimilarityDegree reg : resultEffects) {
+//					System.out.println("EFF RESQUEST " + reg.getRequestParameter());
+//					System.out.println("EFF SERVICE " + reg.getServiceParameter());
+//					System.out.println("EFF DEGREE " + reg.getSimilarityDegree());
+//			}
+
+		} else {
+			SimilarityDegree test = new SimilarityDegree(URI.create(""), 4.0, URI.create(""));
+			resultEffects.add(test);
+
+		}
+
+
+
+
+		return resultEffects;
+	}
+
 	
 	private ArrayList<SimilarityDegree> caculateDegreeConditions(ArrayList<URI> serviceParameters, ArrayList<URI> requestParameters, char typeOfParameters) {
 		ArrayList<SimilarityDegree> matchedParameters = new ArrayList<SimilarityDegree>();

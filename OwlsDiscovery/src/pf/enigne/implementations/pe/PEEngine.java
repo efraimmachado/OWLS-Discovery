@@ -56,7 +56,24 @@ public class PEEngine implements IEngine{
 		
 	}
 	
-	
+	public double PECompositionalEngineResult(Service service, Query request){
+
+		ArrayList<Service> services = new ArrayList<Service>();
+		services.add(service);
+		ArrayList<Query> queries = new ArrayList<Query>();
+		queries.add(request);
+		peMatcher = new PEMatcher();
+
+		peMatcher.compositionalMatcher(services, request);
+
+		this.setResultPrecondition(peMatcher.getResultPreconditions());
+		//this.setResultEffect(peMatcher.getResultEffects());
+
+		return this.getCompositionalClassifyResults();
+
+	}
+
+
 	/**
 	 * Method that classifies the obtained results. Different from the upper method, this method return the levelMatching.  
 	 * @param services - A service
@@ -67,7 +84,14 @@ public class PEEngine implements IEngine{
 		
 		return returnLevelMatching(resultPrecondition, resultEffect);
 	}
-	
+
+	public double getCompositionalClassifyResults() {
+		//Properties property = MessageProperties.getInstance();
+
+		return returnCompositionalLevelMatching(resultPrecondition);
+	}
+
+
 	/**
 	 * Method that return the smallest degree of match between input and output parameters.
 	 * @param resultInput - An ArrayList with correspondences of input parameters.
@@ -108,6 +132,27 @@ public class PEEngine implements IEngine{
 		return levelMatching;
 	}
 	
+	private double returnCompositionalLevelMatching(ArrayList<SimilarityDegree> resultPrecondition) {
+		double levelMatching = FunctionalMatcher.NOTHING;
+
+		for (SimilarityDegree param : resultPrecondition) {
+			System.out.println("resultPrecondition Request " + param.getRequestParameter());
+			System.out.println("resultPrecondition Service " + param.getServiceParameter());
+			System.out.println("resultPrecondition Degree " + param.getSimilarityDegree());
+
+		}
+
+		if(!resultPrecondition.isEmpty())
+                {
+			for(int i=0; i < resultPrecondition.size(); i++) {
+				if(resultPrecondition.get(i).getSimilarityDegree() < levelMatching) {
+					levelMatching = resultPrecondition.get(i).getSimilarityDegree();
+				}
+			}
+		}
+		return levelMatching;
+	}
+
 
 	public ArrayList<SimilarityDegree> getResultPrecondition() {
 		return resultPrecondition;
