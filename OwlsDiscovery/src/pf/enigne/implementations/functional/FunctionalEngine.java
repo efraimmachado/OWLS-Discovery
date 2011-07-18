@@ -209,8 +209,8 @@ public class FunctionalEngine implements IEngine{
 //                                    System.out.println("outputs "+inputManager.getServices().get(i).getOutputList());
 //                                    servicesMatched.add(this.classifyCompositionalResults(inputManager.getServices().get(i),inputManager.getRequest()));
 //            			}
-                                //removing services catched by user filter (exact, subsumes....)
-                                filterResult(inputResults);
+                                //removing services catched by user filter (exact, subsumes....) the service is passed to take the PE
+                                filterResult(inputResults, annoyingNode.getService());
                                 //organise the matchs with its services
                                 ArrayList<CompositionalServiceInputMatch> compServicesInputMatch = CreateInputMatch(inputManager.getServices(),inputResults);
 //                                System.out.println("testando a lista criada");
@@ -229,7 +229,7 @@ public class FunctionalEngine implements IEngine{
 				while (newNode == null && !compServicesInputMatch.isEmpty())
 				{
                                         System.out.println("Escolhendo melhor servico");
-                                        CompositionalServiceInputMatch compServInp = BestChoice(compServicesInputMatch);
+                                        CompositionalServiceInputMatch compServInp = BestChoice(compServicesInputMatch, graph);
                                         newNode = new Node(compServInp.getService(),null);
                                         compServicesInputMatch.remove(compServInp);
                                         System.out.println("servico escolhido "+newNode.getService().getUri());
@@ -476,121 +476,121 @@ public class FunctionalEngine implements IEngine{
 	 * @param service - A service
 	 * @param request - A request
 	 */
-	public Service classifyCompositionalResults(Service service, Query request) {
-		int levelMatching;
-		Properties property = MessageProperties.getInstance();
-                levelMatching = (int) returnCompositionalLevelMatching(resultInputs);
-
-		//Writing the correspondences
-		///efraim modificou para false
-                this.PETreatment = false;
-
-		switch(levelMatching) {
-			case (FunctionalMatcher.EXACT): {
-				if (isFiltered(property.getProperty("label_exact")) && (this.PETreatment == true)) {
-					PEEngine peEngine = new PEEngine();
-
-					double level = peEngine.PEEngineResult(service, request);
-
-					this.startTimePE = peEngine.getStartTimePE();
-					this.endTimePE = peEngine.getEndTimePE();
-
-					String result = returnResult(level);
-					if(isFilteredPE(result)){
-						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-					}
-
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_exact") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("EXACT");
-				} else if (isFiltered(property.getProperty("label_exact"))) {
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_exact") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("EXACT");
-				}
-				break;
-			}
-			case (FunctionalMatcher.PLUGIN): {
-				if (isFiltered(property.getProperty("label_plugin"))&& (this.PETreatment == true)) {
-					PEEngine peEngine = new PEEngine();
-					double level = peEngine.PEEngineResult(service, request);
-					String result = returnResult(level);
-					if(isFilteredPE(result)){
-						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-					}
-
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_plugin") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("PLUGIN");
-
-				} else if (isFiltered(property.getProperty("label_plugin"))) {
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_plugin") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("PLUGIN");
-				}
-				break;
-			}
-			case (FunctionalMatcher.SUBSUMES): {
-				if (isFiltered(property.getProperty("label_subsumes")) && (this.PETreatment == true)) {
-					PEEngine peEngine = new PEEngine();
-					double level = peEngine.PEEngineResult(service, request);
-					String result = returnResult(level);
-					if(isFilteredPE(result)){
-						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-					}
-
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_subsumes") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("SUBSUMES");
-
-				} else if (isFiltered(property.getProperty("label_subsumes"))) {
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_subsumes") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("SUBSUMES");
-				}
-				break;
-			}
-			case (FunctionalMatcher.SIBLING): {
-				if (isFiltered(property.getProperty("label_sibling")) && (this.PETreatment == true)) {
-					PEEngine peEngine = new PEEngine();
-					double level = peEngine.PEEngineResult(service, request);
-					String result = returnResult(level);
-					if(isFilteredPE(result)){
-						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-					}
-
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_sibling") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("SIBLING");
-
-				} else if (isFiltered(property.getProperty("label_sibling"))) {
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_sibling") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-					service.setDegreeMatch("SIBLING");
-				}
-				break;
-			}
-			default: {
-
-				if (isFiltered(property.getProperty("label_fail")) && (this.hybridTreatment == false)) {
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_fail") + ") \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-				} else if (isFiltered(property.getProperty("label_fail")) && (this.hybridTreatment == true)) {
-					DescriptiveEngine descriptiveEngine = new DescriptiveEngine();
-					double resultDescriptive = descriptiveEngine.descriptiveEngineHybrid(service, request, dataHybrid.getBasicCoefficient(),
-							dataHybrid.getStructuralCoefficient(), dataHybrid.getAncestorCoefficient(),
-							dataHybrid.getImmediateChldCoefficient(), dataHybrid.getLeafCoefficient(),
-							dataHybrid.getSiblingCoefficient(), dataHybrid.getThreshold(), dataHybrid.getDicitonaryPath());
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_fail") + ") Hybrid \n");
-					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " ( " + resultDescriptive + " ) Hybrid \n");
-					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
-				}
-				service.setDegreeMatch("FAIL");
-				break;
-			}
-		}
-		return service;
-	}
+//	public Service classifyCompositionalResults(Service service, Query request) {
+//		int levelMatching;
+//		Properties property = MessageProperties.getInstance();
+//                levelMatching = (int) returnCompositionalLevelMatching(resultInputs);
+//
+//		//Writing the correspondences
+//		///efraim modificou para false
+//                this.PETreatment = false;
+//
+//		switch(levelMatching) {
+//			case (FunctionalMatcher.EXACT): {
+//				if (isFiltered(property.getProperty("label_exact")) && (this.PETreatment == true)) {
+//					PEEngine peEngine = new PEEngine();
+//
+//					double level = peEngine.PEEngineResult(service, request);
+//
+//					this.startTimePE = peEngine.getStartTimePE();
+//					this.endTimePE = peEngine.getEndTimePE();
+//
+//					String result = returnResult(level);
+//					if(isFilteredPE(result)){
+//						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
+//					}
+//
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_exact") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("EXACT");
+//				} else if (isFiltered(property.getProperty("label_exact"))) {
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_exact") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("EXACT");
+//				}
+//				break;
+//			}
+//			case (FunctionalMatcher.PLUGIN): {
+//				if (isFiltered(property.getProperty("label_plugin"))&& (this.PETreatment == true)) {
+//					PEEngine peEngine = new PEEngine();
+//					double level = peEngine.PEEngineResult(service, request);
+//					String result = returnResult(level);
+//					if(isFilteredPE(result)){
+//						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
+//					}
+//
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_plugin") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("PLUGIN");
+//
+//				} else if (isFiltered(property.getProperty("label_plugin"))) {
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_plugin") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("PLUGIN");
+//				}
+//				break;
+//			}
+//			case (FunctionalMatcher.SUBSUMES): {
+//				if (isFiltered(property.getProperty("label_subsumes")) && (this.PETreatment == true)) {
+//					PEEngine peEngine = new PEEngine();
+//					double level = peEngine.PEEngineResult(service, request);
+//					String result = returnResult(level);
+//					if(isFilteredPE(result)){
+//						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
+//					}
+//
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_subsumes") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("SUBSUMES");
+//
+//				} else if (isFiltered(property.getProperty("label_subsumes"))) {
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_subsumes") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("SUBSUMES");
+//				}
+//				break;
+//			}
+//			case (FunctionalMatcher.SIBLING): {
+//				if (isFiltered(property.getProperty("label_sibling")) && (this.PETreatment == true)) {
+//					PEEngine peEngine = new PEEngine();
+//					double level = peEngine.PEEngineResult(service, request);
+//					String result = returnResult(level);
+//					if(isFilteredPE(result)){
+//						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
+//					}
+//
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_sibling") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("SIBLING");
+//
+//				} else if (isFiltered(property.getProperty("label_sibling"))) {
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_sibling") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//					service.setDegreeMatch("SIBLING");
+//				}
+//				break;
+//			}
+//			default: {
+//
+//				if (isFiltered(property.getProperty("label_fail")) && (this.hybridTreatment == false)) {
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_fail") + ") \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//				} else if (isFiltered(property.getProperty("label_fail")) && (this.hybridTreatment == true)) {
+//					DescriptiveEngine descriptiveEngine = new DescriptiveEngine();
+//					double resultDescriptive = descriptiveEngine.descriptiveEngineHybrid(service, request, dataHybrid.getBasicCoefficient(),
+//							dataHybrid.getStructuralCoefficient(), dataHybrid.getAncestorCoefficient(),
+//							dataHybrid.getImmediateChldCoefficient(), dataHybrid.getLeafCoefficient(),
+//							dataHybrid.getSiblingCoefficient(), dataHybrid.getThreshold(), dataHybrid.getDicitonaryPath());
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + property.getProperty("label_fail") + ") Hybrid \n");
+//					MainFunctionalMatcher.writeOutput(service.getUri().toString() + " ( " + resultDescriptive + " ) Hybrid \n");
+//					MainFunctionalMatcher.writeOutput("---------------------------------------------------------------------------------------------------------------------\n");
+//				}
+//				service.setDegreeMatch("FAIL");
+//				break;
+//			}
+//		}
+//		return service;
+//	}
 
 
 	/**
@@ -747,7 +747,7 @@ public class FunctionalEngine implements IEngine{
 		this.servicesMatched = servicesMatched;
 	}
 
-    private CompositionalServiceInputMatch BestChoice(ArrayList<CompositionalServiceInputMatch> servicesInputMatch) {
+    private CompositionalServiceInputMatch BestChoice(ArrayList<CompositionalServiceInputMatch> servicesInputMatch, Graph graph) {
 
         int serviceChoosenIndex = 0;
         //int inputChoosenIndex = 0;
@@ -770,13 +770,18 @@ public class FunctionalEngine implements IEngine{
                 }
                 else if(degreeValue == maxDegree)
                 {
-                    if (serviceInputMatch.getService().getInputList().size() < minInput)
+                    System.out.println("comparando "+servicesInputMatch.get(serviceChoosenIndex).getService().getUri()+"\n com "+serviceInputMatch.getService().getUri());
+//                    if(!graph.serviceUsed(servicesInputMatch.get(serviceChoosenIndex).getService()) &&
+//                            graph.serviceUsed(serviceInputMatch.getService()) &&
+                    if(
+                            serviceInputMatch.getService().getInputList().size() < minInput)
                     {
                         serviceChoosenIndex = i;
                         //inputChoosenIndex   = j;
                         minInput = serviceInputMatch.getService().getInputList().size();
                         //System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
                     }
+                    System.out.println("vencedor "+servicesInputMatch.get(serviceChoosenIndex).getService().getUri());
                 }
             }
         }
@@ -786,7 +791,7 @@ public class FunctionalEngine implements IEngine{
         return servicesInputMatch.get(serviceChoosenIndex);
     }
 
-    private void filterResult(ArrayList<ArrayList<SimilarityDegree>> inputResults) {
+    private void filterResult(ArrayList<ArrayList<SimilarityDegree>> inputResults, Service service) {
 
         Properties property = MessageProperties.getInstance();
         for (int i = 0; i < inputResults.size(); i++)
@@ -794,6 +799,7 @@ public class FunctionalEngine implements IEngine{
             ArrayList<SimilarityDegree> serviceInputResult = inputResults.get(i);
            // System.out.println("servico "+inputManager.getServices().get(i).getUri());
             //System.out.println("inputs antes "+inputResults.get(i));
+            //itering in service input match degree...
             for (int j = 0; j < serviceInputResult.size(); j++)
             {
                 //System.out.println(serviceInputResult.get(j).getServiceParameter());
@@ -803,10 +809,13 @@ public class FunctionalEngine implements IEngine{
 				if (isFiltered(property.getProperty("label_exact")) && (this.PETreatment == true))
                                 {
                                     PEEngine peEngine = new PEEngine();
-//					double level = peEngine.PEEngineResult(service, request);
-					//if(isFilteredPE(result)){
-//						MainFunctionalMatcher.writeOutput(service.getUri().toString() + " (" + result + ") Preconditions/Effects \n");
-                                        //}
+                                    Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
+                                    double level = peEngine.PEEngineResult(inputManager.getServices().get(i), request);
+                                    String result = returnResult(level);
+                                    if(isFilteredPE(result))
+                                    {
+                                        System.out.println("filtro PE ok");
+                                    }
 				}
                                 else if (isFiltered(property.getProperty("label_exact")))
                                 {

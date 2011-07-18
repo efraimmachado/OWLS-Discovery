@@ -306,4 +306,16 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         }
         return false;
     }
+
+    public boolean serviceUsed(Service service)
+    {
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            if (nodes.get(i).getService().getUri().toString().equals(service.getUri().toString()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
