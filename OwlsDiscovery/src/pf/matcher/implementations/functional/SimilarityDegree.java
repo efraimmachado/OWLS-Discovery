@@ -79,4 +79,9 @@ public class SimilarityDegree {
 	public void setServiceParameter(URI serviceParametre) {
 		this.serviceParameter = serviceParametre;
 	}
+
+        public String toString()
+        {
+            return serviceParameter.toString();
+        }
 }

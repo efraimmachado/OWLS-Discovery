@@ -227,8 +227,6 @@ public class FunctionalEngine implements IEngine{
 //
 //                                }
                                //choice the best service to solve the pendency
-                                if (true)
-                                    
 				while (newNode == null && !compServicesInputMatch.isEmpty())
 				{
                                         System.out.println("Escolhendo melhor servico");
@@ -809,7 +807,6 @@ public class FunctionalEngine implements IEngine{
             System.out.println("filtrando "+inputManager.getServices().get(i).getUri());
             for (int j = 0; j < serviceInputResult.size(); j++)
             {
-                //System.out.println(serviceInputResult.get(j).getServiceParameter());
     		switch((int)serviceInputResult.get(j).getSimilarityDegree())
                 {
 			case (FunctionalMatcher.EXACT): {
@@ -828,7 +825,7 @@ public class FunctionalEngine implements IEngine{
                                     {
                                         //ignora esse servico pq ele nao satisfaz as PE
                                         System.out.println("nao satisfaz PE, removendo "+inputManager.getServices().get(i).getUri());
-                                        serviceInputResult = new ArrayList<SimilarityDegree>();
+                                        inputResults.set(i, new ArrayList<SimilarityDegree>());//get(i) = new ArrayList<SimilarityDegree>();
                                         //serviceInputResult.remove(j);
                                         //j--;
                                     }
@@ -852,10 +849,19 @@ public class FunctionalEngine implements IEngine{
                                     Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
                                     double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
                                     String result = returnResult(level);
+                                    System.out.println("resultado do PE "+result);
                                     if(isFilteredPE(result))
                                     {
                                         System.out.println("filtro PE ok");
                                     }
+                                    else
+                                    {
+                                        //ignora esse servico pq ele nao satisfaz as PE
+                                        System.out.println("nao satisfaz PE, removendo "+inputManager.getServices().get(i).getUri());
+                                        inputResults.set(i, new ArrayList<SimilarityDegree>());//get(i) = new ArrayList<SimilarityDegree>();                                        //serviceInputResult.remove(j);
+                                        //j--;
+                                    }
+
 				}
                                 else if (isFiltered(property.getProperty("label_plugin")))
                                 {
@@ -876,10 +882,20 @@ public class FunctionalEngine implements IEngine{
                                     Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
                                     double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
                                     String result = returnResult(level);
+                                    System.out.println("resultado do PE "+result);
                                     if(isFilteredPE(result))
                                     {
                                         System.out.println("filtro PE ok");
                                     }
+                                    else
+                                    {
+                                        //ignora esse servico pq ele nao satisfaz as PE
+                                        System.out.println("nao satisfaz PE, removendo "+inputManager.getServices().get(i).getUri());
+                                        inputResults.set(i, new ArrayList<SimilarityDegree>());//get(i) = new ArrayList<SimilarityDegree>();
+                                        //serviceInputResult.remove(j);
+                                        //j--;
+                                    }
+
 				}
                                 else if (isFiltered(property.getProperty("label_subsumes")))
                                 {
@@ -900,10 +916,19 @@ public class FunctionalEngine implements IEngine{
                                     Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
                                     double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
                                     String result = returnResult(level);
+                                    System.out.println("resultado do PE "+result);
                                     if(isFilteredPE(result))
                                     {
                                         System.out.println("filtro PE ok");
                                     }
+                                    else
+                                    {
+                                        //ignora esse servico pq ele nao satisfaz as PE
+                                        System.out.println("nao satisfaz PE, removendo "+inputManager.getServices().get(i).getUri());
+                                        inputResults.set(i, new ArrayList<SimilarityDegree>());//get(i) = new ArrayList<SimilarityDegree>();                                        //serviceInputResult.remove(j);
+                                        //j--;
+                                    }
+
 				}
                                 else if (isFiltered(property.getProperty("label_sibling")))
                                 {
@@ -932,12 +957,8 @@ public class FunctionalEngine implements IEngine{
 			}
                 }
             }
-         //   System.out.println("inputs depois "+inputResults.get(i));
-//            if (inputResults.get(i).size() == 0)
-//            {
-//                i--;
-//            }
-        }
+            System.out.println("inputs depois "+inputResults.get(i));
+         }
     }
 
     private ArrayList<CompositionalServiceInputMatch> CreateInputMatch(ArrayList<Service> services, ArrayList<ArrayList<SimilarityDegree>> inputResults)
@@ -949,6 +970,7 @@ public class FunctionalEngine implements IEngine{
             if (!inputResults.get(i).isEmpty())
             {
                 result.add(new CompositionalServiceInputMatch(services.get(i),inputResults.get(i)));
+                System.out.println("servico adicionado: "+services.get(i).getUri());
             }
         }
         return result;
