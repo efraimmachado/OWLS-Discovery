@@ -600,10 +600,11 @@ public class PEMatcher implements IMatcher {
 		ArrayList<ArrayList<SimilarityDegree>> matchResult = new ArrayList<ArrayList<SimilarityDegree>>();
 
 		//if there are service effects
-		if((services.get(0).getEffectList()!= null && !services.get(0).getEffectList().isEmpty()) &&
-                     (request.getPreconditionList()!= null && !request.getPreconditionList().isEmpty())
-                        ){
+                //(services.get(0).getEffectList()!= null && !services.get(0).getEffectList().isEmpty()) &&
+		if((request.getPreconditionList()!= null && !request.getPreconditionList().isEmpty()))
+                {
 			//loop to swap the services's conditions
+                        if ((services.get(0).getEffectList()!= null && !services.get(0).getEffectList().isEmpty()))
 			for (ArrayList<URI> serviceCondition : services.get(0).getEffectList()) {
 
 				//This variable is used to save the result of the matching of the role Condition (Predicates are used as parameters)
@@ -703,7 +704,7 @@ public class PEMatcher implements IMatcher {
 //					System.out.println("PC DEGREE " + reg.getSimilarityDegree());
 //			}
 
-		} else { // There are not services preconditions
+		} else { // There are not request preconditions
 			SimilarityDegree test = new SimilarityDegree(URI.create(""), 4.0, URI.create(""));
 			resultPreconditions.add(test);
 

@@ -64,7 +64,32 @@ public class PEEngine implements IEngine{
 		queries.add(request);
 		peMatcher = new PEMatcher();
 
-		peMatcher.compositionalMatcher(services, request);
+                System.out.println("Request: "+request.getUri());
+                if (request.getPreconditionList() != null)
+                for (int i = 0; i < request.getPreconditionList().size(); i++)
+                {
+                    for (int j = 0; j < request.getPreconditionList().get(i).size(); j++)
+                    {
+                        System.out.println(request.getPreconditionList().get(i).get(j));
+                    }
+                }
+                else
+                    System.out.println("sem pre");
+
+
+                System.out.println("effect:");
+                if (service.getEffectList() != null)
+                for (int i = 0; i < service.getEffectList().size(); i++)
+                {
+                    for (int j = 0; j < service.getEffectList().get(i).size(); j++)
+                    {
+                        System.out.println(service.getEffectList().get(i).get(j));
+                    }
+                }
+                else
+                    System.out.println("sem effect");
+
+                peMatcher.compositionalMatcher(services, request);
 
 		this.setResultPrecondition(peMatcher.getResultPreconditions());
 		//this.setResultEffect(peMatcher.getResultEffects());

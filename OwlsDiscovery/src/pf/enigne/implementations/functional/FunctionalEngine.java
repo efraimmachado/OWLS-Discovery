@@ -117,7 +117,7 @@ public class FunctionalEngine implements IEngine{
 		}
 	}
 	
-//	Lore INICO
+
 	public FunctionalEngine(String[] args, String[] filter, String[] filterPE, DescriptiveData dataHybrid, boolean hybridTreatment, boolean PETreatment, boolean isCompositionValid) throws IOException {
 
 //		this.startTimeES = System.currentTimeMillis();
@@ -157,8 +157,10 @@ public class FunctionalEngine implements IEngine{
                         boolean noSolution = false;
 			//deve-se colocar o que o usuario quer na entrada, nao tem output
 			Node finalNode = null;
-                        try {
-                            finalNode = new Node(new Service(inputManager.getRequest().getOutputList(), new ArrayList<URI>(), new URI("FINAL_STATE")), "FINAL_STATE");
+                        try
+                        {
+                            Query finalQuery = inputManager.getRequest();
+                            finalNode = new Node(new Service(finalQuery.getOutputList(), new ArrayList<URI>(), finalQuery.getEffectList(), new ArrayList<ArrayList<URI>>(), new URI("FINAL_STATE")), "FINAL_STATE");
                         } catch (URISyntaxException ex) {
                             Logger.getLogger(FunctionalEngine.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -175,7 +177,8 @@ public class FunctionalEngine implements IEngine{
 			//the next line makes the request input be used in the composition if it is necessary
                         try {
                             //ficar de olho nisso... acho que o output tem que ser o input...como está ;)
-                            inputManager.addService(new Service(new ArrayList<URI>(), inputManager.getRequest().getInputList(), new URI("REQUEST_STATE")));
+                            inputManager.addService(new Service(new ArrayList<URI>(), inputManager.getRequest().getInputList(),
+                                    new ArrayList<ArrayList<URI>>(),inputManager.getRequest().getPreconditionList(), new URI("REQUEST_STATE")));
                         } catch (URISyntaxException ex) {
                             Logger.getLogger(FunctionalEngine.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -278,10 +281,12 @@ public class FunctionalEngine implements IEngine{
                                                 graph.getNodes().remove(annoyingNode);
                                                 for (int q = 0; q < graph.getEdges().size(); q++)
                                                 {
+                                                    System.out.println("testando "+graph.getEdges().get(q));
                                                     if (graph.getEdges().get(q).getOriginNode()!= null)
                                                     {
                                                         if (graph.getEdges().get(q).getOriginNode() == annoyingNode)
                                                         {
+                                                            System.out.println("limpando "+graph.getEdges().get(q));
                                                             graph.getEdges().get(q).setEdge(null,graph.getEdges().get(q).getDestinyNode() , true);
                                                         }
                                                     }
@@ -289,6 +294,7 @@ public class FunctionalEngine implements IEngine{
                                                     {
                                                             System.out.println("removendo "+graph.getEdges().get(q));
                                                             graph.getEdges().remove(graph.getEdges().get(q));
+                                                            q--;
                                                     }
                                                 }
 						//graph.removeNodeUntilNoFixedEdge(annoyingNode, null);
@@ -770,7 +776,7 @@ public class FunctionalEngine implements IEngine{
                 }
                 else if(degreeValue == maxDegree)
                 {
-                    System.out.println("comparando "+servicesInputMatch.get(serviceChoosenIndex).getService().getUri()+"\n com "+serviceInputMatch.getService().getUri());
+                    //System.out.println("comparando "+servicesInputMatch.get(serviceChoosenIndex).getService().getUri()+"\n com "+serviceInputMatch.getService().getUri());
 //                    if(!graph.serviceUsed(servicesInputMatch.get(serviceChoosenIndex).getService()) &&
 //                            graph.serviceUsed(serviceInputMatch.getService()) &&
                     if(
@@ -781,7 +787,7 @@ public class FunctionalEngine implements IEngine{
                         minInput = serviceInputMatch.getService().getInputList().size();
                         //System.out.println("minInput "+minInput+" get "+serviceInputMatch.getService().getInputList().size());
                     }
-                    System.out.println("vencedor "+servicesInputMatch.get(serviceChoosenIndex).getService().getUri());
+                    //System.out.println("vencedor "+servicesInputMatch.get(serviceChoosenIndex).getService().getUri());
                 }
             }
         }
@@ -800,6 +806,7 @@ public class FunctionalEngine implements IEngine{
            // System.out.println("servico "+inputManager.getServices().get(i).getUri());
             //System.out.println("inputs antes "+inputResults.get(i));
             //itering in service input match degree...
+            System.out.println("filtrando "+inputManager.getServices().get(i).getUri());
             for (int j = 0; j < serviceInputResult.size(); j++)
             {
                 //System.out.println(serviceInputResult.get(j).getServiceParameter());
@@ -812,9 +819,18 @@ public class FunctionalEngine implements IEngine{
                                     Query request =  new Query(service.getInputList(), service.getOutputList(), service.getPreconditionList(), service.getEffectList(), service.getUri());
                                     double level = peEngine.PECompositionalEngineResult(inputManager.getServices().get(i), request);
                                     String result = returnResult(level);
+                                    System.out.println("resultado do PE "+result);
                                     if(isFilteredPE(result))
                                     {
                                         System.out.println("filtro PE ok");
+                                    }
+                                    else
+                                    {
+                                        //ignora esse servico pq ele nao satisfaz as PE
+                                        System.out.println("nao satisfaz PE, removendo "+inputManager.getServices().get(i).getUri());
+                                        serviceInputResult = new ArrayList<SimilarityDegree>();
+                                        //serviceInputResult.remove(j);
+                                        //j--;
                                     }
 				}
                                 else if (isFiltered(property.getProperty("label_exact")))
