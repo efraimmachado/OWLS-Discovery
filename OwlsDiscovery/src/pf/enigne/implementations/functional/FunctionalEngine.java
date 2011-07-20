@@ -134,7 +134,7 @@ public class FunctionalEngine implements IEngine{
 		inputManager.readDataEntry(args);
 
 		long startTime = System.currentTimeMillis();
-		if (!isCompositionValid)
+		if (isCompositionValid)
 		{
 			functionalMatcher.matcher(inputManager.getServices(), inputManager.getRequest());
 			/*
@@ -751,8 +751,8 @@ public class FunctionalEngine implements IEngine{
 		this.servicesMatched = servicesMatched;
 	}
 
-    private CompositionalServiceInputMatch BestChoice(ArrayList<CompositionalServiceInputMatch> servicesInputMatch, Graph graph) {
-
+    private CompositionalServiceInputMatch BestChoice(ArrayList<CompositionalServiceInputMatch> servicesInputMatch, Graph graph)
+    {
         int serviceChoosenIndex = 0;
         //int inputChoosenIndex = 0;
         double maxDegree = 0.0;
