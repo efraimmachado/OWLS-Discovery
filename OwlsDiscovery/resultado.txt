@@ -1,0 +1,7 @@
+REQUEST:
+file:/C:/xampp/htdocs/queries/testes/r9.owls
+
+SERVICE:
+file:/C:/xampp/htdocs/services/testes10/s91.owls (FAIL) Preconditions/Effects 
+file:/C:/xampp/htdocs/services/testes10/s91.owls (SIBLING) 
+---------------------------------------------------------------------------------------------------------------------

@@ -248,8 +248,9 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
         forbiddenNodes.add(node);
     }
 
-    public void print()
+    public String print()
     {
+        String result = "";
         System.out.println("\nPRINTING GRAPH...\n");
         System.out.println("NODES = "+nodes);
         System.out.println("EDGES = "+edges);
@@ -258,28 +259,32 @@ public void removeNodeUntilNoFixedEdge(Node node, Edge fromThatEdge)
             if (edges.get(i).getFixedEdge())
             {
                 System.out.print("(");
+                result += "(";
                 if (edges.get(i).getOriginNode() != null)
                 {
                     System.out.print(edges.get(i).getOriginNode().getService().getUri()+" , ");
+                    result += edges.get(i).getOriginNode().getService().getUri()+" , ";
                 }
                 else
                 {
                    System.out.print("NULL , ");
+                   result += "NULL , ";
                 }
                 if (edges.get(i).getDestinyNode() != null)
                 {
                     System.out.print(edges.get(i).getDestinyNode().getService().getUri());
+                    result += edges.get(i).getDestinyNode().getService().getUri();
                 }
                 else
                 {
                    System.out.print("NULL");
+                   result += "NULL";
                 }
                 System.out.println(")");
-
+                result += ")\n";
             }
-
         }
-        
+        return result;
     }
 
     public void removeUnsed()

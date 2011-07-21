@@ -118,7 +118,7 @@ public class FunctionalEngine implements IEngine{
 	}
 	
 
-	public FunctionalEngine(String[] args, String[] filter, String[] filterPE, DescriptiveData dataHybrid, boolean hybridTreatment, boolean PETreatment, boolean isCompositionValid) throws IOException {
+	public FunctionalEngine(String[] args, String[] filter, String[] filterPE, DescriptiveData dataHybrid, boolean hybridTreatment, boolean PETreatment, boolean isCompositionValid,boolean checkDeadlock, boolean formalValidationStep, boolean formaValidationEnd) throws IOException {
 
 //		this.startTimeES = System.currentTimeMillis();
 
@@ -134,7 +134,7 @@ public class FunctionalEngine implements IEngine{
 		inputManager.readDataEntry(args);
 
 		long startTime = System.currentTimeMillis();
-		if (isCompositionValid)
+		if (!isCompositionValid)
 		{
 			functionalMatcher.matcher(inputManager.getServices(), inputManager.getRequest());
 			/*
@@ -255,13 +255,16 @@ public class FunctionalEngine implements IEngine{
 //                                            graph.addEdge(alternativeNode, edge.getDestinyNode(), edge.getUri(),edge, false);
 //					}
 					//test if there is a cicle with the new service... i said it is a annoying node... ok ok, it isnt his fault, sry
-                                        System.out.println("testando a existência de ciclo");
-					if (graph.thereIsAPath(edge.getDestinyNode(),newNode))
-					{
-                                                System.out.printf("Existe um ciclo");
-						graph.addForbiddenNode(annoyingNode);
-						graph.removeNodeUntilNoFixedEdge(annoyingNode, null); //power power rangers verificar se eh null mesmo
-					}
+                                        if (checkDeadlock)
+                                        {
+                                            System.out.println("testando a existência de ciclo");
+                                            if (graph.thereIsAPath(edge.getDestinyNode(),newNode))
+                                            {
+                                                    System.out.printf("Existe um ciclo");
+                                                    graph.addForbiddenNode(annoyingNode);
+                                                    graph.removeNodeUntilNoFixedEdge(annoyingNode, null); //power power rangers verificar se eh null mesmo
+                                            }
+                                        }
                                         System.out.println("no adicionado com sucesso");
                                         //adding more new pendencies (the new node ^^)
                                         NodeInputs = newNode.getService().getInputList();
@@ -313,6 +316,7 @@ public class FunctionalEngine implements IEngine{
                             System.out.println("\nSOLUCAO ENCONTRADA");
                         }
                         graph.removeUnsed();
+                        MainFunctionalMatcher.writeOutput(graph.print()+"\n---------------------------------------------------------------------------------------------------------------------\n");
                         graph.print();
 		}
 		long endTime = System.currentTimeMillis();

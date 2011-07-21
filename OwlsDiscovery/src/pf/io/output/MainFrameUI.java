@@ -813,7 +813,7 @@ public class MainFrameUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 //		Lore
 		this.txtRequest.setText("C:\\xampp\\htdocs\\queries\\testes\\r9.owls");
-		this.txtService.setText("C:\\xampp\\htdocs\\services\\testes2");
+		this.txtService.setText("C:\\xampp\\htdocs\\services\\teste_owltime");
 		
 		if (e.getSource() == btnRequest) {
 			fileChooser = new JFileChooser();
@@ -957,12 +957,12 @@ public class MainFrameUI extends JFrame implements ActionListener {
 				
 //				MainFunctionalMatcher.invoke(arg, functionalData, descriptiveData, txtResult);
 				
-				try { //Adicionado o Try Catch pq tava dando erro na hroa de compilar!
-					MainFunctionalMatcher.invoke(arg, functionalData, descriptiveData, true, txtResult);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+//				try { //Adicionado o Try Catch pq tava dando erro na hroa de compilar!
+//					MainFunctionalMatcher.invoke(arg, functionalData, descriptiveData, true, txtResult);
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
 				
 				btnExport.setEnabled(true);
 			}
@@ -1032,9 +1032,9 @@ public class MainFrameUI extends JFrame implements ActionListener {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		MainFrameUI frame = new MainFrameUI();
-		frame.getJFrame();
-		frame.setVisible(true);
-	}
+//	public static void main(String[] args) {
+//		MainFrameUI frame = new MainFrameUI();
+//		frame.getJFrame();
+//		frame.setVisible(true);
+//	}
 }

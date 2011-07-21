@@ -55,12 +55,12 @@ public class MainFunctionalMatcher {
 	}
 ///efraim
         @SuppressWarnings("unused")
-	public static void invoke(String[] args, FunctionalData data, DescriptiveData dataHybrid, boolean isCompositionValid, JTextArea txtResult) throws IOException {
+	public static void invoke(String[] args, FunctionalData data, DescriptiveData dataHybrid, boolean isCompositionValid,boolean checkDeadlock, boolean formalValidationStep, boolean formaValidationEnd,  JTextArea txtResult) throws IOException {
             result = txtResult;
 //		Lore
 //		FunctionalEngine functionalEngine = new FunctionalEngine(args, data.getFilters(), dataHybrid, data.isHybridTreatment());
 //		Lore
-            FunctionalEngine functionalEngine = new FunctionalEngine(args, data.getFilters(), data.getFiltersPE(),  dataHybrid, data.isHybridTreatment(), data.isPETreatment(), isCompositionValid);
+            FunctionalEngine functionalEngine = new FunctionalEngine(args, data.getFilters(), data.getFiltersPE(),  dataHybrid, data.isHybridTreatment(), data.isPETreatment(), isCompositionValid,checkDeadlock,formalValidationStep, formaValidationEnd);
      	}
 ///efraim-fim
 
